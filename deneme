@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<title>Ali Portal</title>
+
+<style>
+
+body{
+font-family:Arial;
+margin:0;
+background:#f2f2f2;
+text-align:center;
+}
+
+.topbar{
+position:absolute;
+top:10px;
+right:20px;
+}
+
+button{
+padding:10px 20px;
+font-size:16px;
+background:#0077ff;
+color:white;
+border:none;
+border-radius:8px;
+cursor:pointer;
+}
+
+input{
+padding:10px;
+margin:10px;
+font-size:16px;
+width:220px;
+}
+
+#login{
+margin-top:120px;
+}
+
+#register{
+display:none;
+margin-top:120px;
+}
+
+#portal{
+display:none;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="topbar">
+<button onclick="kayitAc()">Kaydol</button>
+</div>
+
+<div id="login">
+
+<h2>Giriş Yap</h2>
+
+<input id="email" placeholder="E-posta"><br> <input id="sifre" type="password" placeholder="Şifre"><br>
+
+<button onclick="giris()">Giriş Yap</button>
+
+<p id="hata"></p>
+
+</div>
+
+<div id="register">
+
+<h2>Kayıt Ol</h2>
+
+<input id="ad" placeholder="Ad Soyad"><br>
+
+<input id="tel" placeholder="+90XXXXXXXXXX"><br>
+
+<button id="kayitBtn" onclick="kayit()">Kaydol</button>
+
+<p id="uyari"></p>
+
+</div>
+
+<div id="portal">
+
+<h2>Ali Portal</h2>
+
+<p>Hoş geldin 🎉</p>
+
+</div>
+
+<script>
+
+function kayitAc(){
+
+document.getElementById("login").style.display="none";
+document.getElementById("register").style.display="block";
+
+}
+
+function giris(){
+
+let email=document.getElementById("email").value;
+let sifre=document.getElementById("sifre").v
