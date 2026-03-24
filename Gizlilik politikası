@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<title>Gizlilik Politikası</title>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        margin: 40px;
+        line-height: 1.6;
+        background-color: #f4f4f4;
+    }
+    .container {
+        background: white;
+        padding: 20px;
+        border-radius: 10px;
+        max-width: 800px;
+        margin: auto;
+        box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    h1 {
+        text-align: center;
+    }
+</style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Gizlilik Politikası</h1>
+
+    <p>Bu gizlilik politikası, Aras Portal uygulamasını kullanan kullanıcıların bilgilerinin nasıl toplandığını, kullanıldığını ve korunduğunu açıklar.</p>
+
+    <h3>Toplanan Bilgiler</h3>
+    <p>Uygulamamız, kullanıcı deneyimini geliştirmek amacıyla bazı temel bilgileri toplayabilir. Bu bilgiler, kullanıcı adı ve giriş bilgileri gibi verileri içerebilir.</p>
+
+    <h3>Bilgilerin Kullanımı</h3>
+    <p>Toplanan bilgiler yalnızca hizmetin sağlanması ve geliştirilmesi amacıyla kullanılır. Hiçbir şekilde üçüncü kişilerle paylaşılmaz.</p>
+
+    <h3>Veri Güvenliği</h3>
+    <p>Kullanıcı bilgilerinin güvenliği bizim için önemlidir. Bu nedenle uygun teknik ve idari önlemler alınmaktadır.</p>
+
+    <h3>Çerezler (Cookies)</h3>
+    <p>Uygulamamız, kullanıcı deneyimini iyileştirmek için çerezler kullanabilir.</p>
+
+    <h3>Değişiklikler</h3>
+    <p>Bu gizlilik politikası zaman zaman güncellenebilir. Güncellemeler bu sayfada yayınlanacaktır.</p>
+
+    <h3>İletişim</h3>
+    <p>Herhangi bir sorunuz varsa bizimle iletişime geçebilirsiniz.</p>
+
+</div>
+
+</body>
+</html>
