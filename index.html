@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<title>Aras Portal</title>
+<style>
+    body {
+        font-family: Arial;
+        text-align: center;
+        margin-top: 50px;
+    }
+    input, button {
+        padding: 10px;
+        margin: 5px;
+    }
+    #panel, #aiMenu, #responses {
+        display: none;
+        margin-top: 20px;
+    }
+</style>
+</head>
+<body>
+
+<h1>Aras Portal</h1>
+
+<div id="login">
+    <input type="text" id="email" placeholder="E-posta"><br>
+    <input type="password" id="password" placeholder="Şifre"><br>
+    <button onclick="login()">Giriş Yap</button>
+    <p id="error" style="color:red;"></p>
+</div>
+
+<div id="panel">
+    <button onclick="showAI()">Seçenek</button>
+</div>
+
+<div id="aiMenu">
+    <h3>Yapay Zeka</h3>
+    <button onclick="answer('nasilsin')">Nasılsın?</button>
+    <button onclick="answer('sinif')">Hangi sınıftasın?</button>
+    <button onclick="answer('bilmece')">Bilmece sorayım mı?</button>
+</div>
+
+<div id="responses"></div>
+
+<script>
+function login() {
+    let email = document.getElementById("email").value;
+    let password = document.getElementById("password").value;
+
+    if(email === "halfoffame" && password === "0317Aa0317") {
+        document.getElementById("login").style.display = "none";
+        document.getElementById("panel").style.display = "block";
+    } else {
+        document.getElementById("error").innerText = "Giriş bilgileri yanlış";
+    }
+}
+
+function showAI() {
+    document.getElementById("aiMenu").style.display = "block";
+}
+
+function answer(type) {
+    let responsesDiv = document.getElementById("responses");
+    responsesDiv.style.display = "block";
+
+    let riddles = [
+        "Kanadı var uçamaz, ağzı var konuşamaz. Nedir? (Cevap: Balık)",
+        "Yer altında sarı top, çıkardıkça olur çok. Nedir? (Cevap: Patates)",
+        "Gece gelir gündüz gider, ışık vermez ama görünür. Nedir? (Cevap: Ay)"
+    ];
+
+    if(type === "nasilsin") {
+        responsesDiv.innerText = "İyiyim, sen nasılsın?";
+    } 
+    else if(type === "sinif") {
+        responsesDiv.innerText = "3-C";
+    } 
+    else if(type === "bilmece") {
+        let random = riddles[Math.floor(Math.random() * riddles.length)];
+        responsesDiv.innerText = random;
+    }
+}
+</script>
+
+</body>
+</html>
