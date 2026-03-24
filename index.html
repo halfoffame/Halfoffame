@@ -85,3 +85,22 @@ function answer(type) {
 
 </body>
 </html>
+def sifrele(metin, anahtar):
+    sonuc = ""
+    for i in range(len(metin)):
+        k = anahtar[i % len(anahtar)]
+        sonuc += chr(ord(metin[i]) ^ ord(k))
+    return sonuc
+
+def coz(sifreli_metin, anahtar):
+    return sifrele(sifreli_metin, anahtar)  # XOR aynı işlem
+
+anahtar = "0317Aa0317"
+
+metin = "Merhaba dünya!"
+sifreli = sifrele(metin, anahtar)
+
+print("Şifreli metin:", sifreli)
+
+cozulmus = coz(sifreli, anahtar)
+print("Çözülmüş metin:", cozulmus)
