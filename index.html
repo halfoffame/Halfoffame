@@ -3,104 +3,125 @@
 <head>
 <meta charset="UTF-8">
 <title>Aras Portal</title>
+
 <style>
-    body {
-        font-family: Arial;
-        text-align: center;
-        margin-top: 50px;
-    }
-    input, button {
-        padding: 10px;
-        margin: 5px;
-    }
-    #panel, #aiMenu, #responses {
-        display: none;
-        margin-top: 20px;
-    }
+body{
+font-family:Arial;
+background:#f2f2f2;
+text-align:center;
+margin:0;
+}
+
+.container{
+margin-top:100px;
+}
+
+input{
+padding:10px;
+margin:10px;
+font-size:16px;
+}
+
+button{
+padding:10px 20px;
+font-size:16px;
+background:#0077ff;
+color:white;
+border:none;
+border-radius:8px;
+cursor:pointer;
+}
+
+#portal{
+display:none;
+margin-top:50px;
+}
+
+#ai{
+display:none;
+margin-top:20px;
+}
+
+#cevap{
+margin-top:20px;
+font-weight:bold;
+}
 </style>
+
 </head>
+
 <body>
 
-<h1>Aras Portal</h1>
+<div id="login" class="container">
 
-<div id="login">
-    <input type="text" id="email" placeholder="E-posta"><br>
-    <input type="password" id="password" placeholder="Şifre"><br>
-    <button onclick="login()">Giriş Yap</button>
-    <p id="error" style="color:red;"></p>
+<h2>Giriş Yap</h2>
+
+<input id="email" placeholder="E-posta"><br>
+<input id="sifre" type="password" placeholder="Şifre"><br>
+
+<button onclick="giris()">Giriş Yap</button>
+
+<p id="hata"></p>
+
 </div>
 
-<div id="panel">
-    <button onclick="showAI()">Seçenek</button>
+<div id="portal">
+
+<h2>Ali Portal</h2>
+
+<button onclick="aiAc()">Yapay Zeka</button>
+
 </div>
 
-<div id="aiMenu">
-    <h3>Yapay Zeka</h3>
-    <button onclick="answer('nasilsin')">Nasılsın?</button>
-    <button onclick="answer('sinif')">Hangi sınıftasın?</button>
-    <button onclick="answer('bilmece')">Bilmece sorayım mı?</button>
-</div>
+<div id="ai">
 
-<div id="responses"></div>
+<h3>Yapay Zeka</h3>
+
+<input id="soru" placeholder="Bir şey yaz...">
+
+<button onclick="cevapla()">Gönder</button>
+
+<p id="cevap"></p>
+
+</div>
 
 <script>
-function login() {
-    let email = document.getElementById("email").value;
-    let password = document.getElementById("password").value;
 
-    if(email === "halfoffame" && password === "0317Aa0317") {
-        document.getElementById("login").style.display = "none";
-        document.getElementById("panel").style.display = "block";
-    } else {
-        document.getElementById("error").innerText = "Giriş bilgileri yanlış";
-    }
+function giris(){
+
+let email=document.getElementById("email").value;
+let sifre=document.getElementById("sifre").value;
+
+if(email==="halfoffame" && sifre==="0317Aa0317"){
+
+document.getElementById("login").style.display="none";
+document.getElementById("portal").style.display="block";
+
+}else{
+
+document.getElementById("hata").innerText="Giriş bilgileri yanlış";
+
 }
 
-function showAI() {
-    document.getElementById("aiMenu").style.display = "block";
 }
 
-function answer(type) {
-    let responsesDiv = document.getElementById("responses");
-    responsesDiv.style.display = "block";
+function aiAc(){
 
-    let riddles = [
-        "Kanadı var uçamaz, ağzı var konuşamaz. Nedir? (Cevap: Balık)",
-        "Yer altında sarı top, çıkardıkça olur çok. Nedir? (Cevap: Patates)",
-        "Gece gelir gündüz gider, ışık vermez ama görünür. Nedir? (Cevap: Ay)"
-    ];
+document.getElementById("ai").style.display="block";
 
-    if(type === "nasilsin") {
-        responsesDiv.innerText = "İyiyim, sen nasılsın?";
-    } 
-    else if(type === "sinif") {
-        responsesDiv.innerText = "3-C";
-    } 
-    else if(type === "bilmece") {
-        let random = riddles[Math.floor(Math.random() * riddles.length)];
-        responsesDiv.innerText = random;
-    }
 }
+
+function cevapla(){
+
+let soru=document.getElementById("Merhaba").value;
+
+let cevap="Merhaba, sana nasıl yardımcı olabilirim?";
+
+document.getElementById("cevap").innerText=cevap;
+
+}
+
 </script>
 
 </body>
 </html>
-def sifrele(metin, anahtar):
-    sonuc = ""
-    for i in range(len(metin)):
-        k = anahtar[i % len(anahtar)]
-        sonuc += chr(ord(metin[i]) ^ ord(k))
-    return sonuc
-
-def coz(sifreli_metin, anahtar):
-    return sifrele(sifreli_metin, anahtar)  # XOR aynı işlem
-
-anahtar = "0317Aa0317"
-
-metin = "Merhaba dünya!"
-sifreli = sifrele(metin, anahtar)
-
-print("Şifreli metin:", sifreli)
-
-cozulmus = coz(sifreli, anahtar)
-print("Çözülmüş metin:", cozulmus)
