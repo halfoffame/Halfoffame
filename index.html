@@ -1,8 +1,9 @@
 <!DOCTYPE html>
+
 <html lang="tr">
 <head>
 <meta charset="UTF-8">
-<title>Aras Portal</title>
+<title>Ali Portal</title>
 
 <style>
 body{
@@ -56,8 +57,7 @@ font-weight:bold;
 
 <h2>Giriş Yap</h2>
 
-<input id="email" placeholder="E-posta"><br>
-<input id="sifre" type="password" placeholder="Şifre"><br>
+<input id="email" placeholder="E-posta"><br> <input id="sifre" type="password" placeholder="Şifre"><br>
 
 <button onclick="giris()">Giriş Yap</button>
 
@@ -67,7 +67,7 @@ font-weight:bold;
 
 <div id="portal">
 
-<h2>Aras Portal</h2>
+<h2>Ali Portal</h2>
 
 <button onclick="aiAc()">Yapay Zeka</button>
 
@@ -92,7 +92,7 @@ function giris(){
 let email=document.getElementById("email").value;
 let sifre=document.getElementById("sifre").value;
 
-if(email==="halfoffame" && sifre==="0317Aa0317"){
+if(email==="aliportal" && sifre==="2463543"){
 
 document.getElementById("login").style.display="none";
 document.getElementById("portal").style.display="block";
@@ -113,9 +113,24 @@ document.getElementById("ai").style.display="block";
 
 function cevapla(){
 
-let soru=document.getElementById("Merhaba").value;
+let soru=document.getElementById("soru").value.toLowerCase();
+let cevap="";
 
-let cevap="Merhaba, sana nasıl yardımcı olabilirim?";
+if(soru.includes("merhaba")){
+cevap="Merhaba 👋";
+}
+else if(soru.includes("nasılsın")){
+cevap="İyiyim 😊";
+}
+else if(soru.includes("adın ne")){
+cevap="Ben Ali Portal yapay zekasıyım 🤖";
+}
+else if(soru.includes("matematik")){
+cevap="2 + 2 = 4 eder";
+}
+else{
+cevap="Bu sorunun cevabını henüz bilmiyorum 🙂";
+}
 
 document.getElementById("cevap").innerText=cevap;
 
