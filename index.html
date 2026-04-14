@@ -129,7 +129,7 @@ else if(soru.includes("matematik")){
 cevap="2 + 2 = 4 eder";
 }
 else{
-cevap="Bu sorunun cevabını henüz bilmiyorum 🙂";
+cevap="";
 }
 
 document.getElementById("cevap").innerText=cevap;
@@ -140,3 +140,48 @@ document.getElementById("cevap").innerText=cevap;
 
 </body>
 </html>
+from flask import Flask, render_template, request, jsonify
+from openai import OpenAI
+import json
+
+app = Flask(__name__)
+client = OpenAI(api_key="API_KEYİNİ_BURAYA_YAZ")
+
+MEMORY_FILE = "memory.json"
+
+def load_memory():
+    try:
+        with open(MEMORY_FILE, "r") as f:
+            return json.load(f)
+    except:
+        return []
+
+def save_memory(messages):
+    with open(MEMORY_FILE, "w") as f:
+        json.dump(messages, f)
+
+@app.route("/")
+def home():
+    return render_template("index.html")
+
+@app.route("/chat", methods=["POST"])
+def chat():
+    user_message = request.json["message"]
+
+    messages = load_memory()
+    messages.append({"role": "user", "content": user_message})
+
+    response = client.chat.completions.create(
+        model="gpt-4.1-mini",
+        messages=messages
+    )
+
+    reply = response.choices[0].message.content
+
+    messages.append({"role": "assistant", "content": reply})
+    save_memory(messages)
+
+    return jsonify({"reply": reply})
+
+if __name__ == "__main__":
+    app.run(debug=True)
