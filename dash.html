@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <title>Geometry Dash - Skorlu</title>
+    <style>
+        body { margin: 0; display: flex; justify-content: center; align-items: center; height: 100vh; background: #1a1a1a; color: white; font-family: 'Arial', sans-serif; overflow: hidden; }
+        canvas { background: #222; border: 4px solid #555; border-radius: 8px; }
+        #ui { position: absolute; top: 20px; text-align: center; width: 100%; }
+    </style>
+</head>
+<body>
+    <div id="ui">
+        <h2 id="msg">SKOR: <span id="scoreVal">0</span></h2>
+        <p id="subMsg">Zıplamak için BOŞLUK tuşuna bas!</p>
+    </div>
+    <canvas id="gameCanvas"></canvas>
+
+    <script>
+        const canvas = document.getElementById("gameCanvas");
+        const ctx = canvas.getContext("2d");
+        const scoreDisplay = document.getElementById("scoreVal");
+        const msgDisplay = document.getElementById("msg");
+
+        canvas.width = 800;
+        canvas.height = 300;
+
+        let player = { x: 50, y: 250, w: 30, h: 30, dy: 0, jump: -12, gravity: 0.7, grounded: false };
+        let obstacles = [];
+        let score = 0;
+        let gameSpeed = 6;
+        let isAlive = true;
+
+        function spawnObstacle() {
+            if (!isAlive) return;
+            obstacles.push({ x: canvas.width, w: 30, h: 30 + Math.random() * 30 });
+            // Seviye zorlaşması için engellerin gelme hızını ayarla
+            setTimeout(spawnObstacle, Math.max(800, 2000 - (score * 2)));
+        }
+
+        function draw() {
+            if (!isAlive) return;
+
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Yerçekimi ve Yer Kontrolü
+            player.dy += player.gravity;
+            player.y += player.dy;
+            if (player.y + player.h > canvas.height) {
+                player.y = canvas.height - player.h;
+                player.dy = 0;
+                player.grounded = true;
+            }
+
+            // Oyuncuyu Çiz (Kare)
+            ctx.fillStyle = "#00FFCC";
+            ctx.fillRect(player.x, player.y, player.w, player.h);
+
+            // Engelleri Çiz ve Hareket Ettir
+            ctx.fillStyle = "#FF3366";
+            for (let i = obstacles.length - 1; i >= 0; i--) {
+                let o = obstacles[i];
+                o.x -= gameSpeed;
+
+                ctx.fillRect(o.x, canvas.height - o.h, o.w, o.h);
+
+                // Çarpışma Kontrolü (Ölme Anı)
+                if (player.x < o.x + o.w && player.x + player.w > o.x && player.y + player.h > canvas.height - o.h) {
+                    die();
+                }
+
+                // Ekrandan çıkan engelleri sil
+                if (o.x + o.w < 0) obstacles.splice(i, 1);
+            }
+
+            requestAnimationFrame(draw);
+        }
+
+        function die() {
+            isAlive = false;
+            msgDisplay.innerHTML = "ÖLDÜN! <br> TOPLAM SKORUN: " + score;
+            document.getElementById("subMsg").innerText = "Tekrar oynamak için sayfayı yenile (F5)";
+            ctx.fillStyle = "rgba(0,0,0,0.5)";
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+        }
+
+        window.addEventListener("keydown", (e) => {
+            if (e.code === "Space" && player.grounded && isAlive) {
+                player.dy = player.jump;
+                player.grounded = false;
+                // Her zıplamada 10 puan ekle
+                score += 10;
+                scoreDisplay.innerText = score;
+                // Her 100 puanda oyun hızlansın
+                if (score % 100 === 0) gameSpeed += 0.5;
+            }
+        });
+
+        spawnObstacle();
+        draw();
+    </script>
+</body>
+</html>
