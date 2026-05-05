@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <title>Geometry Dash - Gruplu Engeller</title>
+    <style>
+        body { margin: 0; background: #000; overflow: hidden; font-family: Arial, sans-serif; }
+        canvas { display: block; }
+    </style>
+</head>
+<body>
+    <canvas id="game"></canvas>
+    <script>
+        const canvas = document.getElementById('game');
+        const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        let player, obstacles, speed, frame, hue, gameOver, level;
+
+        function resetGame() {
+            player = { x: 150, y: 0, size: 50, vY: 0, grounded: false, rot: 0, trail: [] };
+            obstacles = [];
+            speed = 9;
+            frame = 0;
+            hue = 0;
+            level = 1;
+            gameOver = false;
+            animate();
+        }
+
+        function spawnObstacle() {
+            // Seviye arttıkça grup sayısı artar (Rastgele 1, 2 veya 3 tane yan yana)
+            let groupSize = Math.floor(Math.random() * 3) + 1; 
+            if (level > 5 && Math.random() > 0.5) groupSize = 3; // 5. seviyeden sonra 3'lü gelme şansı artar
+
+            for (let i = 0; i < groupSize; i++) {
+                obstacles.push({
+                    x: canvas.width + (i * 45), // 45 piksel genişlik, yan yana dizilmesi için
+                    w: 45,
+                    h: 50
+                });
+            }
+        }
+
+        function animate() {
+            if (gameOver) {
+                ctx.fillStyle = "rgba(0,0,0,0.8)";
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                ctx.fillStyle = "white";
+                ctx.textAlign = "center";
+                ctx.font = "bold 50px Arial";
+                ctx.fillText("YENİLDİN!", canvas.width / 2, canvas.height / 2);
+                ctx.font = "20px Arial";
+                ctx.fillText("Seviye: " + level + " - Devam etmek için TIKLA", canvas.width / 2, canvas.height / 2 + 50);
+                return;
+            }
+
+            ctx.fillStyle = "black";
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = "#333";
+            ctx.fillRect(0, canvas.height - 100, canvas.width, 100);
+
+            // Fizik ve Hareket
+            player.vY += 0.8;
+            player.y += player.vY;
+            if (player.y + player.size > canvas.height - 100) {
+                player.y = canvas.height - 100 - player.size;
+                player.vY = 0;
+                player.grounded = true;
+                player.rot = Math.round(player.rot / 90) * 90;
+            } else {
+                player.grounded = false;
+                player.rot += 10;
+            }
+
+            // Gökkuşağı İzi
+            hue = (hue + 8) % 360;
+            player.trail.push({x: player.x, y: player.y, r: player.rot, c: `hsla(${hue}, 100%, 50%, 0.5)`, life: 15});
+            for(let i = player.trail.length - 1; i >= 0; i--) {
+                let t = player.trail[i];
+                t.x -= speed; t.life--;
+                if(t.life <= 0) { player.trail.splice(i, 1); continue; }
+                ctx.save();
+                ctx.translate(t.x + 25, t.y + 25);
+                ctx.rotate(t.r * Math.PI / 180);
+                ctx.fillStyle = t.c;
+                ctx.fillRect(-25, -25, 50, 50);
+                ctx.restore();
+            }
+
+            // Engelleri Yönet
+            frame++;
+            if (frame % 80 === 0) {
+                spawnObstacle();
+                if (frame % 400 === 0) { level++; speed += 0.5; }
+            }
+
+            for (let i = obstacles.length - 1; i >= 0; i--) {
+                let o = obstacles[i];
+                o.x -= speed;
+
+                // Kırmızı Diken Çizimi
+                ctx.fillStyle = "#ff0044";
+                ctx.beginPath();
+                ctx.moveTo(o.x, canvas.height - 100);
+                ctx.lineTo(o.x + 22, canvas.height - 150);
+                ctx.lineTo(o.x + 45, canvas.height - 100);
+                ctx.fill();
+
+                // Çarpışma Kontrolü
+                if (player.x < o.x + 35 && player.x + 40 > o.x && player.y + 45 > canvas.height - 150) {
+                    gameOver = true;
+                }
+                if (o.x < -100) obstacles.splice(i, 1);
+            }
+
+            // Seviye Yazısı
+            ctx.fillStyle = "white";
+            ctx.font = "20px Arial";
+            ctx.fillText("Level: " + level, 20, 40);
+
+            // Küp
+            ctx.save();
+            ctx.translate(player.x + 25, player.y + 25);
+            ctx.rotate(player.rot * Math.PI / 180);
+            ctx.fillStyle = "#00ffff";
+            ctx.strokeStyle = "white";
+            ctx.lineWidth = 3;
+            ctx.fillRect(-25, -25, 50, 50);
+            ctx.strokeRect(-25, -25, 50, 50);
+            ctx.restore();
+
+            requestAnimationFrame(animate);
+        }
+
+        const jump = () => {
+            if (gameOver) { resetGame(); }
+            else if (player.grounded) { player.vY = -15; }
+        };
+
+        window.addEventListener('mousedown', jump);
+        window.addEventListener('keydown', (e) => { if(e.code === "Space") jump(); });
+
+        resetGame();
+    </script>
+</body>
+</html>
