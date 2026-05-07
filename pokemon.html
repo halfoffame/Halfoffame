@@ -1,1 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Mini Pokémon Oyunu</title>
+    <style>
+        body { font-family: sans-serif; text-align: center; background: #f0f0f0; }
+        .pkm-card { border: 2px solid #333; padding: 10px; margin: 10px; display: inline-block; background: white; }
+        button { cursor: pointer; padding: 5px 10px; }
+    </style>
+</head>
+<body>
 
+    <h1>Pokémon Savaş Arenası</h1>
+    
+    <div id="battle-area">
+        <div class="pkm-card">
+            <h3>Senin Pokémonun: <span id="my-name">Pikachu</span></h3>
+            <p>Güç: <span id="my-power">Charge</span></p>
+        </div>
+        
+        <p>VS</p>
+
+        <div class="pkm-card">
+            <h3>Rakip: <span id="enemy-name">???</span></h3>
+            <button onclick="savas()">Savaş ve Yakala!</button>
+        </div>
+    </div>
+
+    <div id="envanter">
+        <h3>Sahip Olduğun Pokémonlar:</h3>
+        <p id="list">Pikachu</p>
+    </div>
+
+    <script>
+        // 12.000 pokemonu temsil eden basit bir liste döngüsü
+        let tumPokemonlar = [];
+        for(let i = 1; i <= 12000; i++) {
+            tumPokemonlar.push("Pokemon #" + i);
+        }
+
+        let sahipOlduklarim = ["Pikachu"];
+        let suAnkiRakip = tumPokemonlar[Math.floor(Math.random() * tumPokemonlar.length)];
+
+        document.getElementById("enemy-name").innerText = suAnkiRakip;
+
+        function savas() {
+            alert("Savaşı kazandın ve " + suAnkiRakip + " artık senin!");
+            
+            // Yeni pokemonu listeye ekle
+            sahipOlduklarim.push(suAnkiRakip);
+            document.getElementById("list").innerText = sahipOlduklarim.join(", ");
+            
+            // Yeni bir rakip belirle
+            suAnkiRakip = tumPokemonlar[Math.floor(Math.random() * tumPokemonlar.length)];
+            document.getElementById("enemy-name").innerText = suAnkiRakip;
+        }
+    </script>
+</body>
+</html>
