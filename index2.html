@@ -1,120 +1,37 @@
-<!DOCTYPE html>
-<html lang="tr">
-<head>
-<meta charset="UTF-8">
-<title>ASS APP</title>
+from flask import Flask, request, jsonify
+import requests
 
-<style>
-body{
-    margin:0;
-    background:#0f172a;
-    font-family:Arial;
-    color:white;
-    display:flex;
-    justify-content:center;
-    align-items:center;
-    height:100vh;
-}
+app = Flask(__name__)
 
-.app{
-    width:500px;
-    height:700px;
-    background:#111827;
-    border-radius:20px;
-    display:flex;
-    flex-direction:column;
-    overflow:hidden;
-}
+API_KEY = "BURAYA_GEMINI_API_KEY"
 
-.header{
-    background:#1e293b;
-    padding:20px;
-    text-align:center;
-    font-size:28px;
-    color:#38bdf8;
-    font-weight:bold;
-}
+@app.route("/chat", methods=["POST"])
+def chat():
 
-.chat{
-    flex:1;
-    padding:15px;
-    overflow-y:auto;
-}
+    user_message = request.json["message"]
 
-.msg{
-    padding:12px;
-    margin:10px 0;
-    border-radius:12px;
-    max-width:80%;
-}
+    url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key={API_KEY}"
 
-.user{background:#2563eb;margin-left:auto;}
-.ai{background:#374151;}
+    data = {
+        "contents": [
+            {
+                "parts": [
+                    {"text": user_message}
+                ]
+            }
+        ]
+    }
 
-.bottom{
-    display:flex;
-    padding:10px;
-    background:#1e293b;
-}
+    response = requests.post(url, json=data)
+    result = response.json()
 
-input{
-    flex:1;
-    padding:12px;
-    border:none;
-    border-radius:10px;
-}
+    try:
+        reply = result["candidates"][0]["content"]["parts"][0]["text"]
+    except:
+        reply = "Hata oluştu"
 
-button{
-    margin-left:10px;
-    padding:12px;
-    border:none;
-    border-radius:10px;
-    background:#38bdf8;
-    color:white;
-}
-</style>
-</head>
+    return jsonify({"reply": reply})
 
-<body>
 
-<div class="app">
-    <div class="header">ASS APP</div>
-
-    <div class="chat" id="chat"></div>
-
-    <div class="bottom">
-        <input id="input" placeholder="Soru yaz...">
-        <button onclick="send()">Gönder</button>
-    </div>
-</div>
-
-<script>
-async function send(){
-
-    let input = document.getElementById("input");
-    let chat = document.getElementById("chat");
-
-    let text = input.value;
-    if(!text) return;
-
-    chat.innerHTML += `<div class="msg user">${text}</div>`;
-    input.value = "";
-
-    chat.innerHTML += `<div class="msg ai">Yazıyor...</div>`;
-
-    let res = await fetch("chat.php",{
-        method:"POST",
-        headers:{"Content-Type":"application/json"},
-        body: JSON.stringify({message:text})
-    });
-
-    let data = await res.json();
-
-    document.querySelector(".ai:last-child").remove();
-
-    chat.innerHTML += `<div class="msg ai">${data.reply}</div>`;
-}
-</script>
-
-</body>
-</html>
+if __name__ == "__main__":
+    app.run(debug=True)
