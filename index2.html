@@ -6,61 +6,70 @@
 
 <style>
 body{
+    margin:0;
     background:#0f172a;
-    color:white;
     font-family:Arial;
+    color:white;
     display:flex;
     justify-content:center;
     align-items:center;
     height:100vh;
 }
+
 .app{
     width:500px;
-    height:750px;
+    height:700px;
     background:#111827;
+    border-radius:20px;
     display:flex;
     flex-direction:column;
-    border-radius:20px;
     overflow:hidden;
 }
+
 .header{
     background:#1e293b;
-    text-align:center;
     padding:20px;
+    text-align:center;
     font-size:28px;
     color:#38bdf8;
     font-weight:bold;
 }
+
 .chat{
     flex:1;
     padding:15px;
     overflow-y:auto;
 }
+
 .msg{
     padding:12px;
     margin:10px 0;
     border-radius:12px;
     max-width:80%;
 }
+
 .user{background:#2563eb;margin-left:auto;}
 .ai{background:#374151;}
+
 .bottom{
     display:flex;
     padding:10px;
     background:#1e293b;
 }
+
 input{
     flex:1;
     padding:12px;
     border:none;
     border-radius:10px;
 }
+
 button{
     margin-left:10px;
     padding:12px;
-    background:#38bdf8;
     border:none;
     border-radius:10px;
+    background:#38bdf8;
     color:white;
 }
 </style>
@@ -69,45 +78,42 @@ button{
 <body>
 
 <div class="app">
-<div class="header">ASS APP</div>
+    <div class="header">ASS APP</div>
 
-<div class="chat" id="chat"></div>
+    <div class="chat" id="chat"></div>
 
-<div class="bottom">
-<input id="input" placeholder="Soru yaz...">
-<button onclick="send()">Gönder</button>
-</div>
+    <div class="bottom">
+        <input id="input" placeholder="Soru yaz...">
+        <button onclick="send()">Gönder</button>
+    </div>
 </div>
 
 <script>
-
 async function send(){
 
-    const input = document.getElementById("input");
-    const chat = document.getElementById("chat");
+    let input = document.getElementById("input");
+    let chat = document.getElementById("chat");
 
-    const text = input.value;
+    let text = input.value;
     if(!text) return;
 
     chat.innerHTML += `<div class="msg user">${text}</div>`;
     input.value = "";
 
     chat.innerHTML += `<div class="msg ai">Yazıyor...</div>`;
-    chat.scrollTop = chat.scrollHeight;
 
-    const res = await fetch("/chat", {
+    let res = await fetch("chat.php",{
         method:"POST",
-        headers:{ "Content-Type":"application/json" },
-        body: JSON.stringify({ message: text })
+        headers:{"Content-Type":"application/json"},
+        body: JSON.stringify({message:text})
     });
 
-    const data = await res.json();
+    let data = await res.json();
 
     document.querySelector(".ai:last-child").remove();
 
     chat.innerHTML += `<div class="msg ai">${data.reply}</div>`;
 }
-
 </script>
 
 </body>
