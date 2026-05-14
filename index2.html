@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Yapay Zeka Chat</title>
+
+<style>
+body{
+    background:#0f172a;
+    font-family:Arial;
+    color:white;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    height:100vh;
+}
+
+.chat-box{
+    width:400px;
+    background:#1e293b;
+    padding:20px;
+    border-radius:15px;
+    box-shadow:0 0 20px rgba(0,0,0,0.5);
+}
+
+h1{
+    text-align:center;
+    color:#38bdf8;
+}
+
+#messages{
+    height:300px;
+    overflow-y:auto;
+    background:#0f172a;
+    padding:10px;
+    border-radius:10px;
+    margin-bottom:10px;
+}
+
+.message{
+    margin:10px 0;
+}
+
+.user{
+    color:#22c55e;
+}
+
+.ai{
+    color:#38bdf8;
+}
+
+input{
+    width:75%;
+    padding:10px;
+    border:none;
+    border-radius:10px;
+}
+
+button{
+    padding:10px;
+    border:none;
+    border-radius:10px;
+    background:#38bdf8;
+    color:white;
+    cursor:pointer;
+}
+
+button:hover{
+    background:#0ea5e9;
+}
+</style>
+</head>
+
+<body>
+
+<div class="chat-box">
+    <h1>Yapay Zeka</h1>
+
+    <div id="messages"></div>
+
+    <input type="text" id="question" placeholder="Bir soru yaz...">
+    <button onclick="askAI()">Gönder</button>
+</div>
+
+<script>
+function askAI() {
+
+    let question = document.getElementById("question").value;
+    let messages = document.getElementById("messages");
+
+    if(question.trim() === "") return;
+
+    messages.innerHTML += `
+        <div class="message user">
+            <b>Sen:</b> ${question}
+        </div>
+    `;
+
+    let answer = getAnswer(question);
+
+    messages.innerHTML += `
+        <div class="message ai">
+            <b>Yapay Zeka:</b> ${answer}
+        </div>
+    `;
+
+    document.getElementById("question").value = "";
+    messages.scrollTop = messages.scrollHeight;
+}
+
+function getAnswer(question){
+
+    question = question.toLowerCase();
+
+    if(question.includes("merhaba")){
+        return "Merhaba 👋";
+    }
+
+    if(question.includes("nasılsın")){
+        return "İyiyim, teşekkür ederim.";
+    }
+
+    if(question.includes("adın ne")){
+        return "Ben bir yapay zekayım.";
+    }
+
+    if(question.includes("github")){
+        return "GitHub yazılım projeleri paylaşma platformudur.";
+    }
+
+    if(question.includes("html")){
+        return "HTML web sitesi oluşturmak için kullanılır.";
+    }
+
+    return "Bu soruya şu anda cevap veremiyorum.";
+}
+</script>
+
+</body>
+</html>
