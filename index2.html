@@ -6,52 +6,47 @@
 <title>AS App</title>
 
 <style>
-*{
-    margin:0;
-    padding:0;
-    box-sizing:border-box;
-    font-family:Arial, sans-serif;
-}
 
 body{
+    margin:0;
+    font-family:Arial;
     background:#0f172a;
     color:white;
-    height:100vh;
     display:flex;
     justify-content:center;
     align-items:center;
+    height:100vh;
 }
 
-.container{
-    width:450px;
-    height:700px;
+.app{
+    width:500px;
+    height:800px;
     background:#111827;
     border-radius:20px;
     overflow:hidden;
-    box-shadow:0 0 30px rgba(0,0,0,0.5);
     display:flex;
     flex-direction:column;
 }
 
-.header{
+.top{
     background:#1e293b;
     padding:20px;
     text-align:center;
-    font-size:28px;
+    font-size:30px;
     font-weight:bold;
     color:#38bdf8;
 }
 
 .chat{
     flex:1;
-    padding:15px;
     overflow-y:auto;
+    padding:15px;
 }
 
-.message{
-    margin:12px 0;
+.msg{
     padding:12px;
-    border-radius:12px;
+    margin:10px 0;
+    border-radius:15px;
     max-width:80%;
     line-height:1.5;
 }
@@ -61,11 +56,11 @@ body{
     margin-left:auto;
 }
 
-.ai{
+.bot{
     background:#374151;
 }
 
-.input-box{
+.bottom{
     display:flex;
     padding:15px;
     background:#1e293b;
@@ -73,10 +68,9 @@ body{
 
 input{
     flex:1;
-    padding:12px;
+    padding:15px;
     border:none;
     border-radius:12px;
-    outline:none;
     background:#0f172a;
     color:white;
     font-size:16px;
@@ -84,7 +78,7 @@ input{
 
 button{
     margin-left:10px;
-    padding:12px 18px;
+    padding:15px;
     border:none;
     border-radius:12px;
     background:#38bdf8;
@@ -93,94 +87,89 @@ button{
     font-weight:bold;
 }
 
-button:hover{
-    background:#0ea5e9;
-}
 </style>
 </head>
 
 <body>
 
-<div class="container">
+<div class="app">
 
-    <div class="header">
+    <div class="top">
         AS App
     </div>
 
-    <div class="chat" id="chat">
+    <div class="chat" id="chat"></div>
 
-        <div class="message ai">
-            Merhaba 👋<br>
-            Ben AS App yapay zekasıyım.
-        </div>
-
-    </div>
-
-    <div class="input-box">
-        <input type="text" id="question" placeholder="Bir şey yaz..." />
-        <button onclick="sendMessage()">Gönder</button>
+    <div class="bottom">
+        <input type="text" id="text" placeholder="Bir soru yaz">
+        <button onclick="send()">Gönder</button>
     </div>
 
 </div>
 
 <script>
 
-const apiKey = "BURAYA_OPENAI_API_KEY";
+const API_KEY = "BURAYA_OPENAI_API_KEY";
 
-async function sendMessage(){
+let messages = [
 
-    const input = document.getElementById("question");
+{
+    role:"system",
+    content:"Sen AS App isimli çok gelişmiş bir yapay zekasın."
+}
+
+];
+
+function addMessage(text,type){
+
     const chat = document.getElementById("chat");
 
-    let text = input.value;
-
-    if(text.trim() === "") return;
-
-    // Kullanıcı mesajı
     chat.innerHTML += `
-        <div class="message user">
+        <div class="msg ${type}">
             ${text}
         </div>
     `;
 
+    chat.scrollTop = chat.scrollHeight;
+}
+
+async function send(){
+
+    const input = document.getElementById("text");
+
+    const userText = input.value;
+
+    if(userText.trim() === "") return;
+
+    addMessage(userText,"user");
+
+    messages.push({
+        role:"user",
+        content:userText
+    });
+
     input.value = "";
 
-    // Yazıyor efekti
-    const loadingId = "loading-" + Date.now();
-
-    chat.innerHTML += `
-        <div class="message ai" id="${loadingId}">
-            Yazıyor...
-        </div>
-    `;
-
-    chat.scrollTop = chat.scrollHeight;
+    addMessage("Yazıyor...","bot");
 
     try{
 
-        const response = await fetch("https://api.openai.com/v1/chat/completions",{
+        const response = await fetch(
+            "https://api.openai.com/v1/chat/completions",
+        {
 
             method:"POST",
 
             headers:{
                 "Content-Type":"application/json",
-                "Authorization":"Bearer " + apiKey
+                "Authorization":"Bearer " + API_KEY
             },
 
             body:JSON.stringify({
 
                 model:"gpt-4o-mini",
 
-                messages:[
-                    {
-                        role:"system",
-                        content:"Sen AS App isimli gelişmiş bir yapay zekasın."
-                    },
-                    {
-                        role:"user",
-                        content:text
-                    }
-                ]
+                messages:messages
 
             })
 
@@ -188,18 +177,24 @@ async function sendMessage(){
 
         const data = await response.json();
 
-        let aiText = data.choices[0].message.content;
+        document.querySelector(".bot:last-child").remove();
 
-        document.getElementById(loadingId).innerHTML = aiText;
+        const ai = data.choices[0].message.content;
 
-    }catch(error){
+        addMessage(ai,"bot");
 
-        document.getElementById(loadingId).innerHTML =
-        "Hata oluştu.";
+        messages.push({
+            role:"assistant",
+            content:ai
+        });
+
+    }catch(e){
+
+        document.querySelector(".bot:last-child").innerHTML =
+        "API anahtarı hatalı veya internet bağlantısı yok.";
 
     }
 
-    chat.scrollTop = chat.scrollHeight;
 }
 
 </script>
