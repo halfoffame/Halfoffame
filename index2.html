@@ -1,43 +1,63 @@
-import express from "express";
-import cors from "cors";
-import fetch from "node-fetch";
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<title>ASS APP</title>
+<style>
+body { font-family: Arial; margin: 0; }
+#chat { height: 80vh; overflow-y: auto; padding: 10px; }
+.user { color: blue; }
+.ai { color: green; }
+input, button { padding: 10px; width: 80%; }
+button { width: 18%; }
+</style>
+</head>
+<body>
 
-const app = express();
-app.use(cors());
-app.use(express.json());
+<h2 style="text-align:center;">ASS APP</h2>
 
-const API_KEY = "YOUR_API_KEY";
+<div id="chat"></div>
 
-app.post("/chat", async (req, res) => {
+<div style="display:flex; padding:10px;">
+<input id="input" placeholder="Sorunu yaz">
+<button onclick="send()">Gönder</button>
+</div>
+
+<script>
+async function send() {
+    let input = document.getElementById("input");
+    let chat = document.getElementById("chat");
+
+    let text = input.value;
+    if (!text) return;
+
+    chat.innerHTML += `<div class="user">Sen: ${text}</div>`;
+    input.value = "";
+
     try {
-        const userMessage = req.body.message;
-
-        const response = await fetch("https://api.openai.com/v1/chat/completions", {
+        let res = await fetch("https://api.openai.com/v1/chat/completions", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
-                "Authorization": `Bearer ${API_KEY}`
+                "Authorization": "Bearer YOUR_API_KEY"
             },
             body: JSON.stringify({
                 model: "gpt-4o-mini",
                 messages: [
-                    { role: "system", content: "Sen ASS APP adlı yardımcı asistansın." },
-                    { role: "user", content: userMessage }
+                    { role: "system", content: "Sen ASS APP adlı asistansın." },
+                    { role: "user", content: text }
                 ]
             })
         });
 
-        const data = await response.json();
+        let data = await res.json();
 
-        res.json({
-            reply: data.choices[0].message.content
-        });
-
-    } catch (err) {
-        res.json({ reply: "Hata oluştu" });
+        chat.innerHTML += `<div class="ai">AI: ${data.choices[0].message.content}</div>`;
+    } catch (e) {
+        chat.innerHTML += `<div class="ai">Hata: API tarayıcıdan engellendi (CORS)</div>`;
     }
-});
+}
+</script>
 
-app.listen(3000, () => {
-    console.log("Server çalışıyor: http://localhost:3000");
-});
+</body>
+</html>
