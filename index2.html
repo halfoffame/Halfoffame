@@ -1,50 +1,43 @@
-<script>
-async function send() {
-    let input = document.getElementById("input");
-    let chat = document.getElementById("chat");
+import express from "express";
+import cors from "cors";
+import fetch from "node-fetch";
 
-    let text = input.value;
-    if (!text) return;
+const app = express();
+app.use(cors());
+app.use(express.json());
 
-    // Kullanıcı mesajı
-    chat.innerHTML += `<div class="message user">Sen: ${text}</div>`;
-    input.value = "";
+const API_KEY = "YOUR_API_KEY";
 
-    // Yükleniyor efekti
-    chat.innerHTML += `<div class="message ai" id="loading">AI: yazıyor...</div>`;
-    chat.scrollTop = chat.scrollHeight;
-
-    let response = await realAI(text);
-
-    document.getElementById("loading").remove();
-
-    chat.innerHTML += `<div class="message ai">AI: ${response}</div>`;
-    chat.scrollTop = chat.scrollHeight;
-}
-
-async function realAI(text) {
+app.post("/chat", async (req, res) => {
     try {
-        let res = await fetch("https://api.openai.com/v1/chat/completions", {
+        const userMessage = req.body.message;
+
+        const response = await fetch("https://api.openai.com/v1/chat/completions", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
-                "Authorization": "Bearer YOUR_API_KEY"
+                "Authorization": `Bearer ${API_KEY}`
             },
             body: JSON.stringify({
                 model: "gpt-4o-mini",
                 messages: [
-                    { role: "system", content: "Sen ASS APP adlı yardımcı bir yapay zekasın." },
-                    { role: "user", content: text }
+                    { role: "system", content: "Sen ASS APP adlı yardımcı asistansın." },
+                    { role: "user", content: userMessage }
                 ]
             })
         });
 
-        let data = await res.json();
+        const data = await response.json();
 
-        return data.choices[0].message.content;
+        res.json({
+            reply: data.choices[0].message.content
+        });
 
-    } catch (error) {
-        return "Hata oluştu: API bağlantısı kontrol et";
+    } catch (err) {
+        res.json({ reply: "Hata oluştu" });
     }
-}
-</script>
+});
+
+app.listen(3000, () => {
+    console.log("Server çalışıyor: http://localhost:3000");
+});
