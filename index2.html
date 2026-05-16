@@ -1,151 +1,60 @@
-<!DOCTYPE html>
-<html lang="tr">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ASS APP</title>
+const express = require("express");
+const cors = require("cors");
+const dotenv = require("dotenv");
+const OpenAI = require("openai");
 
-<style>
+dotenv.config();
 
-*{
-    margin:0;
-    padding:0;
-    box-sizing:border-box;
-    font-family:Arial, sans-serif;
-}
+const app = express();
 
-body{
-    background:white;
-    width:100%;
-    min-height:100vh;
-    padding:40px;
-}
+app.use(cors());
+app.use(express.json());
+app.use(express.static("public"));
 
-h1{
-    text-align:center;
-    font-size:170px;
-    font-weight:900;
-    color:black;
-    margin-bottom:60px;
-}
+const openai = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY,
+});
 
-.chat-box{
-    width:100%;
-}
+app.post("/api/chat", async (req, res) => {
 
-.input-area{
-    display:flex;
-    gap:20px;
-    margin-bottom:20px;
-}
+  try {
 
-input{
-    flex:1;
-    padding:25px;
-    border-radius:20px;
-    border:2px solid #ddd;
-    font-size:30px;
-    outline:none;
-}
+    const message = req.body.message;
 
-button{
-    width:220px;
-    border:none;
-    border-radius:20px;
-    background:black;
-    color:white;
-    font-size:32px;
-    cursor:pointer;
-    font-weight:bold;
-    cursor:pointer;
-}
+    const completion =
+      await openai.chat.completions.create({
 
-button:hover{
-    opacity:0.9;
-}
+      model: "gpt-4o-mini",
 
-#reply{
-    width:100%;
-    min-height:350px;
-    border:2px solid #ddd;
-    border-radius:20px;
-    padding:30px;
-    font-size:28px;
-    color:#333;
-}
+      messages: [
+        {
+          role: "system",
+          content: "Sen ASS APP isimli yardımcı bir yapay zekasın."
+        },
+        {
+          role: "user",
+          content: message
+        }
+      ]
 
-</style>
-</head>
+    });
 
-<body>
+    res.json({
+      reply: completion.choices[0].message.content
+    });
 
-<h1>ASS APP</h1>
+  } catch (error) {
 
-<div class="chat-box">
+    console.log(error);
 
-<div class="input-area">
+    res.json({
+      reply: "Bir hata oluştu."
+    });
 
-<input
-type="text"
-id="message"
-placeholder="Mesajınızı yazın..."
->
-
-<button onclick="sendMessage()">
-Gönder
-</button>
-
-</div>
-
-<div id="reply">
-Cevap burada görünecek...
-</div>
-
-</div>
-
-<script>
-
-async function sendMessage(){
-
-const message =
-document.getElementById("message").value;
-
-document.getElementById("reply").innerHTML =
-"Yazıyor...";
-
-try{
-
-const response = await fetch("/api/chat",{
-
-method:"POST",
-
-headers:{
-"Content-Type":"application/json"
-},
-
-body:JSON.stringify({
-message:message
-})
+  }
 
 });
 
-const data = await response.json();
-
-document.getElementById("reply").innerHTML =
-data.reply;
-
-}catch(error){
-
-document.getElementById("reply").innerHTML =
-"Hata oluştu.";
-
-console.log(error);
-
-}
-
-}
-
-</script>
-
-</body>
-</html>
+app.listen(3000, () => {
+  console.log("ASS APP çalışıyor: http://localhost:3000");
+});
