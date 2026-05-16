@@ -1,8 +1,49 @@
-<!DOCTYPE html>
+node server.jsmkdir ai-chat
+cd ai-chat
+npm init -y
+npm install express cors openaiimport express from "express";
+import cors from "cors";
+import OpenAI from "openai";
+
+const app = express();
+app.use(cors());
+app.use(express.json());
+
+// 🔑 BURAYA API KEYİNİ YAPIŞTIR
+const client = new OpenAI({
+    apiKey: "YOUR_OPENAI_API_KEY"
+});
+
+app.post("/chat", async (req, res) => {
+    const userMessage = req.body.message;
+
+    try {
+        const response = await client.chat.completions.create({
+            model: "gpt-4o-mini",
+            messages: [
+                { role: "system", content: "Sen yardımcı bir asistansın." },
+                { role: "user", content: userMessage }
+            ]
+        });
+
+        res.json({
+            reply: response.choices[0].message.content
+        });
+
+    } catch (err) {
+        res.json({
+            reply: "API hatası oluştu."
+        });
+    }
+});
+
+app.listen(3000, () => {
+    console.log("AI Server çalışıyor: http://localhost:3000");
+});"type": "module"<!DOCTYPE html>
 <html lang="tr">
 <head>
 <meta charset="UTF-8">
-<title>ASS APP Chat</title>
+<title>AI Chat</title>
 
 <style>
 body {
@@ -12,81 +53,54 @@ body {
     color: white;
 }
 
-.chat-container {
-    max-width: 700px;
-    margin: auto;
-    padding: 20px;
-}
-
 .chat-box {
     height: 70vh;
     overflow-y: auto;
     background: #111827;
-    padding: 15px;
-    border-radius: 10px;
-}
-
-.msg {
-    margin: 10px 0;
     padding: 10px;
-    border-radius: 8px;
 }
 
+.msg { margin: 8px; padding: 8px; border-radius: 6px; }
 .user { background: #2563eb; text-align: right; }
 .bot { background: #374151; }
 
-.input-area {
-    display: flex;
-    margin-top: 10px;
-}
-
 input {
-    flex: 1;
+    width: 80%;
     padding: 10px;
 }
 
 button {
     padding: 10px;
-    margin-left: 10px;
-    background: #22c55e;
-    border: none;
-    color: white;
-    cursor: pointer;
 }
 </style>
 </head>
 
 <body>
 
-<div class="chat-container">
-    <h2>ASS APP AI</h2>
+<h2>Gerçek AI Chat</h2>
 
-    <div id="chat" class="chat-box"></div>
+<div id="chat" class="chat-box"></div>
 
-    <div class="input-area">
-        <input id="input" placeholder="Mesaj yaz...">
-        <button onclick="sendMessage()">Gönder</button>
-    </div>
-</div>
+<input id="input" placeholder="yaz...">
+<button onclick="send()">Gönder</button>
 
 <script>
 const chat = document.getElementById("chat");
 
-function addMessage(text, type) {
+function add(text, type) {
     const div = document.createElement("div");
     div.className = "msg " + type;
     div.innerText = text;
     chat.appendChild(div);
-    chat.scrollTop = chat.scrollHeight;
 }
 
-async function sendMessage() {
+async function send() {
     const input = document.getElementById("input");
     const text = input.value;
 
     if (!text) return;
 
-    addMessage(text, "user");
+    add(text, "user");
     input.value = "";
 
     const res = await fetch("http://localhost:3000/chat", {
@@ -96,9 +110,9 @@ async function sendMessage() {
     });
 
     const data = await res.json();
-    addMessage(data.reply, "bot");
+    add(data.reply, "bot");
 }
 </script>
 
 </body>
-</html>
+</html>node server.js
