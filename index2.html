@@ -1,60 +1,137 @@
-const express = require("express");
-const cors = require("cors");
-const dotenv = require("dotenv");
-const OpenAI = require("openai");
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>ASS APP Chat</title>
 
-dotenv.config();
+<style>
+body {
+    margin: 0;
+    font-family: Arial;
+    background: #0f172a;
+    color: white;
+}
 
-const app = express();
+.chat-container {
+    max-width: 700px;
+    margin: auto;
+    padding: 20px;
+}
 
-app.use(cors());
-app.use(express.json());
-app.use(express.static("public"));
+.chat-box {
+    height: 70vh;
+    overflow-y: auto;
+    background: #111827;
+    padding: 15px;
+    border-radius: 10px;
+}
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
+.msg {
+    margin: 10px 0;
+    padding: 10px;
+    border-radius: 8px;
+}
 
-app.post("/api/chat", async (req, res) => {
+.user {
+    background: #2563eb;
+    text-align: right;
+}
 
-  try {
+.bot {
+    background: #374151;
+}
 
-    const message = req.body.message;
+.input-area {
+    display: flex;
+    margin-top: 10px;
+}
 
-    const completion =
-      await openai.chat.completions.create({
+input {
+    flex: 1;
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+}
 
-      model: "gpt-3.5-turbo",
+button {
+    padding: 10px 15px;
+    margin-left: 10px;
+    border: none;
+    background: #22c55e;
+    color: white;
+    border-radius: 5px;
+    cursor: pointer;
+}
+</style>
+</head>
 
-      messages: [
-        {
-          role: "system",
-          content: "Sen ASS APP isimli yardımcı bir yapay zekasın."
-        },
-        {
-          role: "user",
-          content: message
-        }
-      ]
+<body>
 
+<div class="chat-container">
+    <h2>ASS APP AI Chat</h2>
+
+    <div id="chat" class="chat-box"></div>
+
+    <div class="input-area">
+        <input id="input" placeholder="Mesaj yaz..." />
+        <button onclick="sendMessage()">Gönder</button>
+    </div>
+</div>
+
+<script>
+const chat = document.getElementById("chat");
+
+function addMessage(text, type) {
+    const div = document.createElement("div");
+    div.classList.add("msg", type);
+    div.innerText = text;
+    chat.appendChild(div);
+    chat.scrollTop = chat.scrollHeight;
+}
+
+// 🔥 BURAYA KENDİ API'Nİ BAĞLAYACAKSIN
+async function sendMessage() {
+    const input = document.getElementById("input");
+    const text = input.value;
+
+    if (!text) return;
+
+    addMessage(text, "user");
+    input.value = "";
+
+    // DEMO BOT (API YOKSA BÖYLE CEVAP VERİR)
+    let response = await fakeAI(text);
+
+    addMessage(response, "bot");
+}
+
+// 🔧 BURASI TEST BOTU (API YERİNE GEÇER)
+function fakeAI(text) {
+    return new Promise(resolve => {
+        setTimeout(() => {
+            resolve("Sen dedin: " + text);
+        }, 500);
     });
+}
 
-    res.json({
-      reply: completion.choices[0].message.content
-    });
+/*
+🔥 GERÇEK API KULLANMAK İSTERSEN:
 
-  } catch (error) {
-
-    console.log(error);
-
-    res.json({
-      reply: "Bir hata oluştu."
-    });
-
-  }
-
+fetch("https://senin-api-adresin.com/chat", {
+    method: "POST",
+    headers: {
+        "Content-Type": "application/json"
+    },
+    body: JSON.stringify({ message: text })
+})
+.then(res => res.json())
+.then(data => {
+    addMessage(data.reply, "bot");
 });
+*/
 
-app.listen(3000, () => {
-  console.log("ASS APP çalışıyor: http://localhost:3000");
-});
+</script>
+
+</body>
+</html>
