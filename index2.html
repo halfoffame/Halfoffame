@@ -1,8 +1,7 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<meta charset="UTF-8">
 <title>ASS APP Chat</title>
 
 <style>
@@ -33,14 +32,8 @@ body {
     border-radius: 8px;
 }
 
-.user {
-    background: #2563eb;
-    text-align: right;
-}
-
-.bot {
-    background: #374151;
-}
+.user { background: #2563eb; text-align: right; }
+.bot { background: #374151; }
 
 .input-area {
     display: flex;
@@ -50,17 +43,14 @@ body {
 input {
     flex: 1;
     padding: 10px;
-    border: none;
-    border-radius: 5px;
 }
 
 button {
-    padding: 10px 15px;
+    padding: 10px;
     margin-left: 10px;
-    border: none;
     background: #22c55e;
+    border: none;
     color: white;
-    border-radius: 5px;
     cursor: pointer;
 }
 </style>
@@ -69,12 +59,12 @@ button {
 <body>
 
 <div class="chat-container">
-    <h2>ASS APP AI Chat</h2>
+    <h2>ASS APP AI</h2>
 
     <div id="chat" class="chat-box"></div>
 
     <div class="input-area">
-        <input id="input" placeholder="Mesaj yaz..." />
+        <input id="input" placeholder="Mesaj yaz...">
         <button onclick="sendMessage()">Gönder</button>
     </div>
 </div>
@@ -84,13 +74,12 @@ const chat = document.getElementById("chat");
 
 function addMessage(text, type) {
     const div = document.createElement("div");
-    div.classList.add("msg", type);
+    div.className = "msg " + type;
     div.innerText = text;
     chat.appendChild(div);
     chat.scrollTop = chat.scrollHeight;
 }
 
-// 🔥 BURAYA KENDİ API'Nİ BAĞLAYACAKSIN
 async function sendMessage() {
     const input = document.getElementById("input");
     const text = input.value;
@@ -100,37 +89,15 @@ async function sendMessage() {
     addMessage(text, "user");
     input.value = "";
 
-    // DEMO BOT (API YOKSA BÖYLE CEVAP VERİR)
-    let response = await fakeAI(text);
-
-    addMessage(response, "bot");
-}
-
-// 🔧 BURASI TEST BOTU (API YERİNE GEÇER)
-function fakeAI(text) {
-    return new Promise(resolve => {
-        setTimeout(() => {
-            resolve("Sen dedin: " + text);
-        }, 500);
+    const res = await fetch("http://localhost:3000/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message: text })
     });
-}
 
-/*
-🔥 GERÇEK API KULLANMAK İSTERSEN:
-
-fetch("https://senin-api-adresin.com/chat", {
-    method: "POST",
-    headers: {
-        "Content-Type": "application/json"
-    },
-    body: JSON.stringify({ message: text })
-})
-.then(res => res.json())
-.then(data => {
+    const data = await res.json();
     addMessage(data.reply, "bot");
-});
-*/
-
+}
 </script>
 
 </body>
