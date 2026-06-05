@@ -32,7 +32,7 @@ body{
 .bot{background:#374151}
 
 input{
-  width:80%;
+  width:75%;
   padding:10px;
 }
 
@@ -44,42 +44,39 @@ button{
 
 <body>
 
-<h2>🤖 ASS APP (Flawless Gemini)</h2>
+<h2>🤖 ASS APP</h2>
 
 <div id="chat"></div>
 
-<input id="input" placeholder="Type message...">
-<button onclick="send()">Send</button>
+<input id="input" placeholder="Mesaj yaz...">
+<button onclick="send()">Gönder</button>
 
 <script>
-async function send() {
-  const input = document.getElementById("input");
-  const text = input.value.trim();
+async function send(){
+  const input=document.getElementById("input");
+  const text=input.value.trim();
 
-  if (!text) return;
+  if(!text) return;
 
-  const chat = document.getElementById("chat");
+  const chat=document.getElementById("chat");
 
-  chat.innerHTML += `<div class="msg user">You: ${text}</div>`;
+  chat.innerHTML += `<div class="msg user">Sen: ${text}</div>`;
 
-  try {
-    const res = await fetch("http://localhost:3000/chat", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({ message: text })
+  try{
+    const res=await fetch("http://localhost:3000/chat",{
+      method:"POST",
+      headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({message:text})
     });
 
-    const data = await res.json();
+    const data=await res.json();
 
     chat.innerHTML += `<div class="msg bot">ASS APP: ${data.reply}</div>`;
-  } catch (err) {
-    console.error(err);
-    chat.innerHTML += `<div class="msg bot">Connection error ❌</div>`;
+  }catch(e){
+    chat.innerHTML += `<div class="msg bot">Bağlantı hatası ❌</div>`;
   }
 
-  input.value = "";
+  input.value="";
 }
 </script>
 
