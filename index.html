@@ -1,144 +1,84 @@
 <!DOCTYPE html>
-
 <html lang="tr">
 <head>
 <meta charset="UTF-8">
-<title>Aras Portal</title>
+<title>ASS APP AI</title>
 
 <style>
 body{
-font-family:Arial;
-background:#f2f2f2;
-text-align:center;
-margin:0;
+  font-family:Arial;
+  background:#0f172a;
+  color:white;
+  max-width:800px;
+  margin:auto;
+  padding:20px;
 }
 
-.container{
-margin-top:100px;
+#chat{
+  height:70vh;
+  overflow:auto;
+  background:#111827;
+  padding:10px;
+  border-radius:10px;
 }
+
+.msg{
+  margin:8px;
+  padding:10px;
+  border-radius:8px;
+}
+
+.user{background:#2563eb;text-align:right}
+.bot{background:#374151}
 
 input{
-padding:10px;
-margin:10px;
-font-size:16px;
+  width:80%;
+  padding:10px;
 }
 
 button{
-padding:10px 20px;
-font-size:16px;
-background:#0077ff;
-color:white;
-border:none;
-border-radius:8px;
-cursor:pointer;
-}
-
-#portal{
-display:none;
-margin-top:50px;
-}
-
-#ai{
-display:none;
-margin-top:20px;
-}
-
-#cevap{
-margin-top:20px;
-font-weight:bold;
+  padding:10px;
 }
 </style>
-
 </head>
 
 <body>
 
-<div id="login" class="container">
+<h2>🤖 ASS APP</h2>
 
-<h2>Giriş Yap</h2>
+<div id="chat"></div>
 
-<input id="email" placeholder="E-posta"><br> <input id="sifre" type="password" placeholder="Şifre"><br>
-
-<button onclick="giris()">Giriş Yap</button>
-
-<p id="hata"></p>
-
-</div>
-
-<div id="portal">
-
-<h2>Aras Portal</h2>
-
-<button onclick="aiAc()">Yapay Zeka</button>
-
-</div>
-
-<div id="ai">
-
-<h3>Yapay Zeka</h3>
-
-<input id="soru" placeholder="Bir şey yaz...">
-
-<button onclick="cevapla()">Gönder</button>
-
-<p id="cevap"></p>
-
-</div>
+<input id="input" placeholder="Mesaj yaz...">
+<button onclick="send()">Gönder</button>
 
 <script>
+async function send(){
+  const input=document.getElementById("input");
+  const text=input.value;
+  if(!text) return;
 
-function giris(){
+  const chat=document.getElementById("chat");
 
-let email=document.getElementById("email").value;
-let sifre=document.getElementById("sifre").value;
+  chat.innerHTML += `<div class="msg user">Sen: ${text}</div>`;
 
-if(email==="halfoffame" && sifre==="0317Aa0317"){
+  try {
+    const res = await fetch("http://localhost:3000/chat", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ message: text })
+    });
 
-document.getElementById("login").style.display="none";
-document.getElementById("portal").style.display="block";
+    const data = await res.json();
 
-}else{
+    chat.innerHTML += `<div class="msg bot">ASS APP: ${data.reply}</div>`;
+  } catch (err) {
+    chat.innerHTML += `<div class="msg bot">Bağlantı hatası ❌</div>`;
+  }
 
-document.getElementById("hata").innerText="Giriş bilgileri yanlış";
-
+  input.value = "";
 }
-
-}
-
-function aiAc(){
-
-document.getElementById("ai").style.display="block";
-
-}
-
-function cevapla(){
-
-let soru=document.getElementById("soru").value.toLowerCase();
-let cevap="";
-
-if(soru.includes("merhaba")){
-cevap="Merhaba sana nasıl yardımcı olabilirim 👋";
-}
-else if(soru.includes("nasılsın?")){
-cevap="İyiyim, sen nasılsın? 😊";
-}
-else if(soru.includes("adın ne")){
-cevap="Ben Aras Portal yapay zekasıyım.Sana nasıl yardımcı olabilirim? 🤖";
-}
-else if(soru.includes("matematik")){
-cevap="Matematik, insanlığın temel ihtiyaçları olan sayma, ölçme, arazi sınırlarını belirleme ve takvim yapma gibi pratik gereksinimlerden doğmuştur";
-}
-else if(soru.includes("seni kim kodladı")){
-cevap="Aras ılız benim bütün kodlarımı hazırladı"
-}
-else{
-cevap="Bu sorunun cevabını henüz bilmiyorum 🙂";
-}
-
-document.getElementById("cevap").innerText=cevap;
-
-}
-
 </script>
 
 </body>
