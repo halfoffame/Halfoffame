@@ -2,11 +2,11 @@
 <html lang="tr">
 <head>
 <meta charset="UTF-8">
-<title>ASS APP AI</title>
+<title>ASS APP</title>
 
 <style>
 body{
-  font-family:Arial;
+  font-family: Arial;
   background:#0f172a;
   color:white;
   max-width:800px;
@@ -44,22 +44,23 @@ button{
 
 <body>
 
-<h2>🤖 ASS APP</h2>
+<h2>🤖 ASS APP (Flawless Gemini)</h2>
 
 <div id="chat"></div>
 
-<input id="input" placeholder="Mesaj yaz...">
-<button onclick="send()">Gönder</button>
+<input id="input" placeholder="Type message...">
+<button onclick="send()">Send</button>
 
 <script>
-async function send(){
-  const input=document.getElementById("input");
-  const text=input.value;
-  if(!text) return;
+async function send() {
+  const input = document.getElementById("input");
+  const text = input.value.trim();
 
-  const chat=document.getElementById("chat");
+  if (!text) return;
 
-  chat.innerHTML += `<div class="msg user">Sen: ${text}</div>`;
+  const chat = document.getElementById("chat");
+
+  chat.innerHTML += `<div class="msg user">You: ${text}</div>`;
 
   try {
     const res = await fetch("http://localhost:3000/chat", {
@@ -74,7 +75,8 @@ async function send(){
 
     chat.innerHTML += `<div class="msg bot">ASS APP: ${data.reply}</div>`;
   } catch (err) {
-    chat.innerHTML += `<div class="msg bot">Bağlantı hatası ❌</div>`;
+    console.error(err);
+    chat.innerHTML += `<div class="msg bot">Connection error ❌</div>`;
   }
 
   input.value = "";
