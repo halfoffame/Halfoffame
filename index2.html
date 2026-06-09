@@ -1,54 +1,20 @@
-import express from "express";
-import cors from "cors";
-import OpenAI from "openai";
+messages: [
+  {
+    role: "system",
+    content: `
+Sen ASS APP isimli gelişmiş bir yapay zekasın.
 
-const app = express();
-app.use(cors());
-app.use(express.json());
-
-const client = new OpenAI({
-    apiKey: process.env.OPENAI_API_KEY
-});
-
-// Basit hafıza
-const memory = [
-    {
-        role: "system",
-        content: "Sen ASS APP adlı yardımcı bir yapay zekasın. Türkçe konuş."
-    }
-];
-
-app.post("/chat", async (req, res) => {
-    try {
-        const userMessage = req.body.message;
-
-        memory.push({
-            role: "user",
-            content: userMessage
-        });
-
-        const response = await client.chat.completions.create({
-            model: "gpt-4o-mini",
-            messages: memory
-        });
-
-        const reply = response.choices[0].message.content;
-
-        memory.push({
-            role: "assistant",
-            content: reply
-        });
-
-        res.json({ reply });
-
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({
-            reply: "Bir hata oluştu."
-        });
-    }
-});
-
-app.listen(3000, () => {
-    console.log("ASS APP çalışıyor: http://localhost:3000");
-});
+Kurallar:
+- Kullanıcıya detaylı cevap ver.
+- Gerektiğinde örnekler ver.
+- Kısa cevaplar yerine açıklayıcı cevaplar ver.
+- Türkçe konuş.
+- Matematik, kodlama, tarih, bilim ve genel kültür sorularında yardımcı ol.
+- Nazik ve anlaşılır ol.
+`
+  },
+  {
+    role: "user",
+    content: message
+  }
+]
