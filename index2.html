@@ -2,38 +2,61 @@
 <html lang="tr">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>ASS APP</title>
 
 <style>
 body{
-  background:white;
-  font-family:Arial;
-  padding:20px;
+    margin:0;
+    font-family:Arial,sans-serif;
+    background:white;
 }
 
 h1{
-  text-align:center;
-  font-size:100px;
-  font-weight:900;
+    text-align:center;
+    font-size:80px;
+    margin-top:30px;
 }
 
 #chat{
-  border:1px solid #ddd;
-  min-height:400px;
-  padding:20px;
-  margin-bottom:20px;
+    width:90%;
+    max-width:1200px;
+    height:500px;
+    margin:auto;
+    border:2px solid #ddd;
+    border-radius:20px;
+    padding:20px;
+    overflow-y:auto;
+}
+
+#controls{
+    width:90%;
+    max-width:1200px;
+    margin:20px auto;
+    display:flex;
+    gap:10px;
 }
 
 input{
-  width:80%;
-  padding:15px;
+    flex:1;
+    padding:15px;
+    font-size:18px;
 }
 
 button{
-  padding:15px;
+    padding:15px 25px;
+    font-size:18px;
+    cursor:pointer;
+}
+
+.user{
+    margin:10px 0;
+}
+
+.ai{
+    margin:10px 0;
 }
 </style>
-
 </head>
 <body>
 
@@ -41,42 +64,41 @@ button{
 
 <div id="chat"></div>
 
-<input id="message" placeholder="Mesaj yaz">
-<button onclick="sendMessage()">Gönder</button>
+<div id="controls">
+    <input id="message" placeholder="Mesajınızı yazın...">
+    <button onclick="sendMessage()">Gönder</button>
+</div>
 
 <script>
-async function sendMessage(){
 
-  const input =
-    document.getElementById("message");
+function sendMessage(){
 
-  const message =
-    input.value;
+    const input = document.getElementById("message");
+    const text = input.value.trim();
 
-  const response =
-    await fetch("/api/chat",{
+    if(!text) return;
 
-      method:"POST",
+    const chat = document.getElementById("chat");
 
-      headers:{
-        "Content-Type":"application/json"
-      },
+    chat.innerHTML += `
+        <div class="user">
+            <b>Sen:</b> ${text}
+        </div>
+    `;
 
-      body:JSON.stringify({
-        message
-      })
+    let answer =
+      "ASS APP çalışıyor. Yapay zeka bağlantısı eklenmediği için bu sürüm yalnızca örnek arayüzdür.";
 
-  });
+    chat.innerHTML += `
+        <div class="ai">
+            <b>ASS APP:</b> ${answer}
+        </div>
+    `;
 
-  const data =
-    await response.json();
-
-  document.getElementById("chat").innerHTML +=
-    "<p><b>Sen:</b> " + message + "</p>" +
-    "<p><b>ASS APP:</b> " + data.reply + "</p>";
-
-  input.value = "";
+    input.value = "";
+    chat.scrollTop = chat.scrollHeight;
 }
+
 </script>
 
 </body>
