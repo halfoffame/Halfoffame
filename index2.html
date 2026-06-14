@@ -1,52 +1,83 @@
-const express = require("express");
-const cors = require("cors");
-const OpenAI = require("openai");
-require("dotenv").config();
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<title>ASS APP</title>
 
-const app = express();
+<style>
+body{
+  background:white;
+  font-family:Arial;
+  padding:20px;
+}
 
-app.use(cors());
-app.use(express.json());
-app.use(express.static("public"));
+h1{
+  text-align:center;
+  font-size:100px;
+  font-weight:900;
+}
 
-const client = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY
-});
+#chat{
+  border:1px solid #ddd;
+  min-height:400px;
+  padding:20px;
+  margin-bottom:20px;
+}
 
-app.post("/api/chat", async (req, res) => {
-  try {
+input{
+  width:80%;
+  padding:15px;
+}
 
-    const userMessage = req.body.message;
+button{
+  padding:15px;
+}
+</style>
 
-    const response = await client.responses.create({
-      model: "gpt-4o-mini",
-      instructions: `
-Sen ASS APP isimli gelişmiş bir yapay zekasın.
+</head>
+<body>
 
-Kurallar:
-- Türkçe cevap ver.
-- Açıklayıcı ve uzun cevaplar ver.
-- Nazik ol.
-- Kodlama, bilim, tarih, matematik ve genel konularda yardımcı ol.
-`,
-      input: userMessage
-    });
+<h1>ASS APP</h1>
 
-    res.json({
-      reply: response.output_text
-    });
+<div id="chat"></div>
 
-  } catch (error) {
+<input id="message" placeholder="Mesaj yaz">
+<button onclick="sendMessage()">Gönder</button>
 
-    console.error(error);
+<script>
+async function sendMessage(){
 
-    res.status(500).json({
-      reply: "Bir hata oluştu."
-    });
+  const input =
+    document.getElementById("message");
 
-  }
-});
+  const message =
+    input.value;
 
-app.listen(3000, () => {
-  console.log("ASS APP çalışıyor: http://localhost:3000");
-});
+  const response =
+    await fetch("/api/chat",{
+
+      method:"POST",
+
+      headers:{
+        "Content-Type":"application/json"
+      },
+
+      body:JSON.stringify({
+        message
+      })
+
+  });
+
+  const data =
+    await response.json();
+
+  document.getElementById("chat").innerHTML +=
+    "<p><b>Sen:</b> " + message + "</p>" +
+    "<p><b>ASS APP:</b> " + data.reply + "</p>";
+
+  input.value = "";
+}
+</script>
+
+</body>
+</html>
