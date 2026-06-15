@@ -1,69 +1,39 @@
-ASS-APP/
-├── public/
-├── server.js
-├── package.json
-├── .gitignore
-└── README.md
-Kullanıcı
-   ↓
-ASS APP
-   ↓
-Konuşma Geçmişi (memory.json)
-   ↓
-Gemini API
-   ↓
-Cevap
-const { GoogleGenerativeAI } = require("@google/generative-ai");
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<title>ASS APP</title>
+</head>
+<body>
 
-const genAI = new GoogleGenerativeAI("GEMINI_API_KEY");
+<h1>ASS APP</h1>
 
-async function askGemini(message) {
-  const model = genAI.getGenerativeModel({
-    model: "gemini-2.5-flash"
+<input id="msg" placeholder="Mesaj yaz">
+<button onclick="send()">Gönder</button>
+
+<div id="chat"></div>
+
+<script>
+async function send() {
+  const text = document.getElementById("msg").value;
+
+  const res = await fetch("/chat", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      message: text
+    })
   });
 
-  const result = await model.generateContent(message);
+  const data = await res.json();
 
-  return result.response.text();
-}const fs = require("fs");
-
-function loadMemory() {
-  if (!fs.existsSync("memory.json")) {
-    fs.writeFileSync("memory.json", "[]");
-  }
-
-  return JSON.parse(fs.readFileSync("memory.json"));
+  document.getElementById("chat").innerHTML +=
+    "<p><b>Sen:</b> " + text + "</p>" +
+    "<p><b>ASS APP:</b> " + data.reply + "</p>";
 }
+</script>
 
-function saveMessage(role, text) {
-  const memory = loadMemory();
-
-  memory.push({
-    role,
-    text
-  });
-
-  fs.writeFileSync(
-    "memory.json",
-    JSON.stringify(memory, null, 2)
-  );
-}const memory = loadMemory();
-
-const prompt = `
-Önceki konuşmalar:
-${JSON.stringify(memory)}
-
-Kullanıcı:
-${message}
-`;
-
-const answer = await askGemini(prompt);
-
-saveMessage("user", message);
-saveMessage("assistant", answer);
-ASS APP
-├─ Sohbet ekranı
-├─ Hafıza (memory.json)
-├─ Kullanıcı ayarları
-├─ Gemini API entegrasyonu (sonradan)
-└─ Geçmiş konuşmalar
+</body>
+</html>
