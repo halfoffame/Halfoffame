@@ -1,124 +1,63 @@
-<!DOCTYPE html>
-<html>
-<head>
-  <title>ASS APP PRO</title>
-  <style>
-    body {
-      margin:0;
-      font-family: Arial;
-      background:#0d0d0d;
-      color:white;
-    }
+ASS-APP/
+├── public/
+├── server.js
+├── package.json
+├── .gitignore
+└── README.md
+Kullanıcı
+   ↓
+ASS APP
+   ↓
+Konuşma Geçmişi (memory.json)
+   ↓
+Gemini API
+   ↓
+Cevap
+const { GoogleGenerativeAI } = require("@google/generative-ai");
 
-    .chat {
-      max-width:800px;
-      margin:auto;
-      height:100vh;
-      display:flex;
-      flex-direction:column;
-    }
+const genAI = new GoogleGenerativeAI("GEMINI_API_KEY");
 
-    .header {
-      padding:15px;
-      background:#1a1a1a;
-      text-align:center;
-      font-weight:bold;
-    }
-
-    .messages {
-      flex:1;
-      padding:10px;
-      overflow-y:auto;
-    }
-
-    .msg {
-      padding:10px;
-      margin:10px;
-      border-radius:10px;
-      max-width:75%;
-      white-space:pre-wrap;
-    }
-
-    .user {
-      background:#2b6cff;
-      margin-left:auto;
-    }
-
-    .ai {
-      background:#2a2a2a;
-      margin-right:auto;
-    }
-
-    .inputBox {
-      display:flex;
-      padding:10px;
-      background:#1a1a1a;
-    }
-
-    input {
-      flex:1;
-      padding:10px;
-      border:none;
-      outline:none;
-    }
-
-    button {
-      padding:10px 15px;
-      background:#2b6cff;
-      color:white;
-      border:none;
-      cursor:pointer;
-    }
-  </style>
-</head>
-
-<body>
-
-<div class="chat">
-  <div class="header">ASS APP PRO 🤖</div>
-
-  <div class="messages" id="messages"></div>
-
-  <div class="inputBox">
-    <input id="input" placeholder="Bir şey yaz..." />
-    <button onclick="send()">Gönder</button>
-  </div>
-</div>
-
-<script>
-const messages = document.getElementById("messages");
-
-function add(text, type) {
-  const div = document.createElement("div");
-  div.className = "msg " + type;
-  div.innerText = text;
-  messages.appendChild(div);
-  messages.scrollTop = messages.scrollHeight;
-}
-
-async function send() {
-  const input = document.getElementById("input");
-  const text = input.value;
-  if (!text) return;
-
-  add(text, "user");
-  input.value = "";
-
-  const loading = document.createElement("div");
-  loading.className = "msg ai";
-  loading.innerText = "AI yazıyor...";
-  messages.appendChild(loading);
-
-  const res = await fetch("/chat", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ message: text })
+async function askGemini(message) {
+  const model = genAI.getGenerativeModel({
+    model: "gemini-2.5-flash"
   });
 
-  const data = await res.json();
-  loading.innerText = data.reply;
-}
-</script>
+  const result = await model.generateContent(message);
 
-</body>
-</html>
+  return result.response.text();
+}const fs = require("fs");
+
+function loadMemory() {
+  if (!fs.existsSync("memory.json")) {
+    fs.writeFileSync("memory.json", "[]");
+  }
+
+  return JSON.parse(fs.readFileSync("memory.json"));
+}
+
+function saveMessage(role, text) {
+  const memory = loadMemory();
+
+  memory.push({
+    role,
+    text
+  });
+
+  fs.writeFileSync(
+    "memory.json",
+    JSON.stringify(memory, null, 2)
+  );
+}const memory = loadMemory();
+
+const prompt = `
+Önceki konuşmalar:
+${JSON.stringify(memory)}
+
+Kullanıcı:
+${message}
+`;
+
+const answer = await askGemini(prompt);
+
+saveMessage("user", message);
+saveMessage("assistant", answer);
