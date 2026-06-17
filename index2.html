@@ -6,93 +6,49 @@
 <title>ASS APP</title>
 
 <style>
-*{
-    margin:0;
-    padding:0;
-    box-sizing:border-box;
-}
-
 body{
-    background:#ffffff;
-    font-family:Arial, sans-serif;
-    height:100vh;
-    display:flex;
-    flex-direction:column;
+    font-family:Arial;
+    margin:0;
+    background:white;
 }
 
-header{
+h1{
     text-align:center;
-    padding:20px;
-    border-bottom:1px solid #ddd;
-}
-
-header h1{
-    font-size:60px;
-    font-weight:900;
+    font-size:70px;
 }
 
 #chat{
-    flex:1;
+    height:500px;
     overflow-y:auto;
+    border:1px solid #ddd;
+    margin:20px;
     padding:20px;
 }
 
-.message{
-    max-width:80%;
-    padding:15px;
-    border-radius:15px;
-    margin-bottom:15px;
-    line-height:1.5;
-}
-
-.user{
-    background:#f0f0f0;
-    margin-left:auto;
-}
-
-.ai{
-    background:#e8f4ff;
-}
-
-.footer{
+#bar{
     display:flex;
-    gap:10px;
-    padding:20px;
-    border-top:1px solid #ddd;
+    margin:20px;
 }
 
-input{
+#message{
     flex:1;
     padding:15px;
-    font-size:16px;
-    border:1px solid #ccc;
-    border-radius:10px;
+    font-size:18px;
 }
 
 button{
     padding:15px 25px;
-    border:none;
-    border-radius:10px;
-    cursor:pointer;
-    font-size:16px;
 }
 </style>
 </head>
 <body>
 
-<header>
-    <h1>ASS APP</h1>
-</header>
+<h1>ASS APP</h1>
 
 <div id="chat"></div>
 
-<div class="footer">
-    <input
-        type="text"
-        id="message"
-        placeholder="ASS APP'e bir şey sor..."
-        onkeypress="if(event.key==='Enter') sendMessage()"
-    >
+<div id="bar">
+    <input id="message" placeholder="Bir şey sor...">
     <button onclick="sendMessage()">Gönder</button>
 </div>
 
@@ -101,17 +57,13 @@ button{
 async function sendMessage(){
 
     const input = document.getElementById("message");
-    const text = input.value.trim();
-
-    if(!text) return;
-
     const chat = document.getElementById("chat");
 
-    chat.innerHTML += `
-        <div class="message user">
-            ${text}
-        </div>
-    `;
+    const text = input.value.trim();
+
+    if(text === "") return;
+
+    chat.innerHTML += "<p><b>Sen:</b> " + text + "</p>";
 
     input.value = "";
 
@@ -129,26 +81,21 @@ async function sendMessage(){
 
         const data = await response.json();
 
-        chat.innerHTML += `
-            <div class="message ai">
-                ${data.reply}
-            </div>
-        `;
+        chat.innerHTML +=
+          "<p><b>ASS APP:</b> " +
+          data.reply +
+          "</p>";
 
         chat.scrollTop = chat.scrollHeight;
 
-    }catch(error){
+    }catch(err){
 
-        chat.innerHTML += `
-            <div class="message ai">
-                Bağlantı hatası oluştu.
-            </div>
-        `;
+        chat.innerHTML +=
+          "<p><b>ASS APP:</b> Sunucuya bağlanılamadı.</p>";
 
     }
 
 }
-
 </script>
 
 </body>
