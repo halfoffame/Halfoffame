@@ -1,39 +1,32 @@
-<!DOCTYPE html>
-<html lang="tr">
-<head>
-<meta charset="UTF-8">
-<title>ASS APP</title>
-</head>
-<body>
-
-<h1>ASS APP</h1>
-
-<input id="msg" placeholder="Mesaj yaz">
-<button onclick="send()">Gönder</button>
-
-<div id="chat"></div>
-
-<script>
-async function send() {
-  const text = document.getElementById("msg").value;
-
-  const res = await fetch("/chat", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify({
-      message: text
-    })
-  });
-
-  const data = await res.json();
-
-  document.getElementById("chat").innerHTML +=
-    "<p><b>Sen:</b> " + text + "</p>" +
-    "<p><b>ASS APP:</b> " + data.reply + "</p>";
+body {
+    font-family: Arial;
+    background: #111;
+    color: white;
+    text-align: center;
 }
-</script>
 
-</body>
-</html>
+.chat-container {
+    width: 400px;
+    margin: auto;
+    margin-top: 50px;
+}
+
+#chat-box {
+    height: 300px;
+    overflow-y: scroll;
+    border: 1px solid gray;
+    padding: 10px;
+    margin-bottom: 10px;
+    background: #222;
+}
+
+input {
+    width: 70%;
+    padding: 10px;
+}
+
+button {
+    padding: 10px;
+    background: orange;
+    border: none;
+}
