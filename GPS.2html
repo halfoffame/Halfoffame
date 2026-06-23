@@ -98,4 +98,102 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
             e.printStackTrace()
         }
     }
+}<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+
+    <application
+        android:allowBackup="true"
+        android:label="ASS APP"
+        android:theme="@style/Theme.AppCompat.Light.NoActionBar">
+
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="BURAYA_API_KEY"/>
+
+        <activity android:name=".MainActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
+        </activity>
+
+    </application>
+
+</manifest><LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <EditText
+        android:id="@+id/searchBox"
+        android:hint="Yer ara..."
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+
+    <Button
+        android:id="@+id/searchBtn"
+        android:text="ARA"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+
+    <fragment
+        android:id="@+id/map"
+        android:name="com.google.android.gms.maps.SupportMapFragment"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
+
+</LinearLayout>package com.assapp.gps
+
+import android.location.Geocoder
+import android.os.Bundle
+import android.widget.Button
+import android.widget.EditText
+import androidx.appcompat.app.AppCompatActivity
+import com.google.android.gms.maps.*
+import com.google.android.gms.maps.model.*
+import java.util.*
+
+class MainActivity : AppCompatActivity(), OnMapReadyCallback {
+
+    private lateinit var map: GoogleMap
+    private lateinit var searchBox: EditText
+    private lateinit var searchBtn: Button
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_main)
+
+        searchBox = findViewById(R.id.searchBox)
+        searchBtn = findViewById(R.id.searchBtn)
+
+        val mapFragment =
+            supportFragmentManager.findFragmentById(R.id.map)
+                    as SupportMapFragment
+
+        mapFragment.getMapAsync(this)
+
+        searchBtn.setOnClickListener {
+            searchLocation(searchBox.text.toString())
+        }
+    }
+
+    override fun onMapReady(googleMap: GoogleMap) {
+        map = googleMap
+    }
+
+    private fun searchLocation(place: String) {
+        val geocoder = Geocoder(this, Locale.getDefault())
+        val results = geocoder.getFromLocationName(place, 1)
+
+        if (!results.isNullOrEmpty()) {
+            val loc = results[0]
+            val point = LatLng(loc.latitude, loc.longitude)
+
+            map.clear()
+            map.addMarker(MarkerOptions().position(point).title(place))
+            map.animateCamera(CameraUpdateFactory.newLatLngZoom(point, 15f))
+        }
+    }
 }
