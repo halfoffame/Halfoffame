@@ -1,7 +1,7 @@
 <!DOCTYPE html>
-<html lang="tr">
+<html>
 <head>
-<meta charset="UTF-8">
+<meta charset="utf-8">
 <title>ASS APP GPS</title>
 
 <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
@@ -16,7 +16,7 @@ button { width:100%; padding:15px; font-size:16px; }
 
 <body>
 
-<header>ASS APP GPS - Konumum</header>
+<header>ASS APP GPS</header>
 
 <button onclick="getLocation()">📍 Konumumu Göster</button>
 
@@ -25,39 +25,34 @@ button { width:100%; padding:15px; font-size:16px; }
 <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 
 <script>
-let map = L.map('map').setView([39.0, 35.0], 6);
+let map = L.map('map').setView([39,35],6);
 
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    attribution: '© OpenStreetMap'
+    attribution:'© OpenStreetMap'
 }).addTo(map);
 
 let marker;
 
 function getLocation() {
 
-    if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(pos => {
 
-        navigator.geolocation.getCurrentPosition(position => {
+        let lat = pos.coords.latitude;
+        let lon = pos.coords.longitude;
 
-            let lat = position.coords.latitude;
-            let lon = position.coords.longitude;
+        if(marker) map.removeLayer(marker);
 
-            if (marker) map.removeLayer(marker);
+        marker = L.marker([lat,lon])
+            .addTo(map)
+            .bindPopup("📍 Sen buradasın")
+            .openPopup();
 
-            marker = L.marker([lat, lon])
-                .addTo(map)
-                .bindPopup("📍 Sen buradasın")
-                .openPopup();
+        map.setView([lat,lon],16);
 
-            map.setView([lat, lon], 17);
+    }, () => {
+        alert("Konum izni verilmedi!");
+    });
 
-        }, () => {
-            alert("Konum izni reddedildi!");
-        });
-
-    } else {
-        alert("Tarayıcı GPS desteklemiyor!");
-    }
 }
 </script>
 
