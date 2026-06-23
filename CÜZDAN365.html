@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<title>Cüzdan365</title>
+
+<style>
+body{
+font-family:Arial;
+text-align:center;
+background:#f2f2f2;
+}
+
+button{
+background:red;
+color:white;
+border:none;
+padding:10px 20px;
+border-radius:8px;
+cursor:pointer;
+margin:5px;
+}
+
+input{
+padding:10px;
+margin:10px;
+}
+</style>
+
+</head>
+<body>
+
+<h1>Cüzdan365</h1>
+
+<p>
+<b>Toplam Tutar:</b>
+<span id="bakiye">0</span> TL
+</p>
+
+<button onclick="ayarlarAc()">Ayarlar</button>
+
+<button onclick="taksitlerAc()">Taksitler</button>
+
+<button onclick="yeniHesapAc()">Yeni Hesap Girişi</button>
+
+<div id="yeniHesap" style="display:none;">
+
+<h3>Yeni Hesap Oluştur</h3>
+
+<input id="adSoyad" placeholder="Ad Soyad"><br>
+
+<input id="telefon" placeholder="Telefon"><br>
+
+<input id="yeniBakiye" type="number" placeholder="Bakiye"><br>
+
+<button onclick="hesapKaydet()">Kaydet</button>
+
+</div>
+
+<h3>Hesap Bilgileri</h3>
+
+<p><b>Ad Soyad:</b> <span id="gosterAd">Belirtilmedi</span></p>
+
+<p><b>Telefon:</b> <span id="gosterTelefon">Belirtilmedi</span></p>
+
+<div id="ayarlar" style="display:none;">
+
+<button onclick="harcamaAc()">Harcama Ekle</button>
+
+<div id="harcamaForm" style="display:none;">
+
+<input id="harcamaAdi" placeholder="Harcama Adı"><br>
+
+<input id="harcamaTutari" type="number" placeholder="Tutar"><br>
+
+<button onclick="harcamaKaydet()">Kaydet</button>
+
+</div>
+
+<h3>Harcamalar</h3>
+
+<div id="harcamalar"></div>
+
+</div>
+
+<div id="taksitler" style="display:none;">
+
+<h3>Taksitler</h3>
+
+<ul id="taksitListesi">
+<li>Telefon - 12 Ay - 2500 TL</li>
+<li>Tablet - 6 Ay - 1200 TL</li>
+<li>Kulaklık - 3 Ay - 500 TL</li>
+</ul>
+
+<input id="taksitAdi" placeholder="Taksit Adı">
+<input id="taksitTutar" type="number" placeholder="Aylık Tutar">
+
+<button onclick="taksitEkle()">Taksit Ekle</button>
+
+</div>
+
+<br><br>
+
+<button onclick="window.location.href='index.html'">
+Ana Sayfaya Dön
+</button>
+
+<script>
+
+let bakiye = 999000000000000000;
+
+function ayarlarAc(){
+document.getElementById("ayarlar").style.display="block";
+}
+
+function harcamaAc(){
+document.getElementById("harcamaForm").style.display="block";
+}
+
+function taksitlerAc(){
+document.getElementById("taksitler").style.display="block";
+}
+
+function yeniHesapAc(){
+document.getElementById("yeniHesap").style.display="block";
+}
+
+function guncelleBakiye(){
+document.getElementById("bakiye").innerText =
+bakiye.toLocaleString("tr-TR");
+}
+
+function hesapKaydet(){
+
+let ad = document.getElementById("adSoyad").value;
+let telefon = document.getElementById("telefon").value;
+let yeniBakiye = Number(document.getElementById("yeniBakiye").value);
+
+if(ad==="" || telefon==="" || isNaN(yeniBakiye)){
+alert("Tüm alanları doldurun");
+return;
+}
+
+document.getElementById("gosterAd").innerText = ad;
+document.getElementById("gosterTelefon").innerText = telefon;
+
+bakiye = yeniBakiye;
+
+guncelleBakiye();
+
+alert("Hesap güncellendi!");
+
+}
+
+function harcamaKaydet(){
+
+let ad = document.getElementById("harcamaAdi").value;
+let tutar = Number(document.getElementById("harcamaTutari").value);
+
+if(ad === "" || isNaN(tutar) || tutar <= 0){
+alert("Tüm alanları doğru doldurun");
+return;
+}
+
+if(tutar > bakiye){
+alert("Yetersiz bakiye");
+return;
+}
+
+bakiye = bakiye - tutar;
+
+document.getElementById("harcamalar").innerHTML +=
+"<p>💸 " + ad + " - " +
+tutar.toLocaleString('tr-TR') + " TL</p>";
+
+guncelleBakiye();
+
+document.getElementById("harcamaAdi").value="";
+document.getElementById("harcamaTutari").value="";
+}
+
+function taksitEkle(){
+
+let ad = document.getElementById("taksitAdi").value;
+let tutar = document.getElementById("taksitTutar").value;
+
+if(ad==="" || tutar===""){
+alert("Bilgileri doldurun");
+return;
+}
+
+document.getElementById("taksitListesi").innerHTML +=
+"<li>"+ad+" - Aylık "+tutar+" TL</li>";
+
+document.getElementById("taksitAdi").value="";
+document.getElementById("taksitTutar").value="";
+}
+
+guncelleBakiye();
+
+</script>
+
+</body>
+</html>
