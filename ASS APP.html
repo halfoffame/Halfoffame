@@ -2,46 +2,85 @@
 <html lang="tr">
 <head>
 <meta charset="UTF-8">
-<title>ASS APP AI</title>
+<title>ASS APP PRO</title>
+
 <style>
 body{
 margin:0;
+display:flex;
+height:100vh;
 font-family:Arial;
 background:#202123;
 color:white;
 }
 
-.header{
-background:#343541;
-padding:15px;
-text-align:center;
-font-size:20px;
+/* SIDEBAR */
+.sidebar{
+width:260px;
+background:#171717;
+display:flex;
+flex-direction:column;
 }
 
-.chat{
-height:80vh;
-overflow-y:auto;
+.sidebar h2{
+padding:15px;
+margin:0;
+border-bottom:1px solid #333;
+}
+
+button{
+margin:10px;
 padding:10px;
+background:#10a37f;
+color:white;
+border:none;
+cursor:pointer;
+border-radius:6px;
+}
+
+.chatList{
+flex:1;
+overflow:auto;
+}
+
+.chatItem{
+padding:10px;
+margin:5px;
+background:#2a2b32;
+cursor:pointer;
+border-radius:5px;
+}
+
+/* MAIN */
+.main{
+flex:1;
+display:flex;
+flex-direction:column;
+}
+
+.messages{
+flex:1;
+padding:15px;
+overflow:auto;
 }
 
 .msg{
 padding:10px;
-margin:10px;
-border-radius:10px;
+margin:10px 0;
+border-radius:8px;
 max-width:80%;
 }
 
 .user{
 background:#444654;
 margin-left:auto;
-text-align:right;
 }
 
 .ai{
 background:#2b2c36;
 }
 
-.bottom{
+.inputArea{
 display:flex;
 padding:10px;
 background:#343541;
@@ -54,11 +93,11 @@ border:none;
 outline:none;
 }
 
-button{
-padding:12px;
+.sendBtn{
 background:#10a37f;
 color:white;
 border:none;
+padding:12px;
 cursor:pointer;
 }
 </style>
@@ -66,28 +105,103 @@ cursor:pointer;
 
 <body>
 
-<div class="header">ASS APP - AI CHATBOT</div>
+<div class="sidebar">
+<h2>ASS APP PRO</h2>
+<button onclick="newChat()">+ Yeni Sohbet</button>
+<div class="chatList" id="chatList"></div>
+</div>
 
-<div class="chat" id="chat"></div>
+<div class="main">
 
-<div class="bottom">
-<input id="input" placeholder="Sorunu yaz...">
-<button onclick="send()">Gönder</button>
+<div class="messages" id="messages"></div>
+
+<div class="inputArea">
+<input id="input" placeholder="Mesaj yaz...">
+<button class="sendBtn" onclick="send()">Gönder</button>
+</div>
+
 </div>
 
 <script>
 
 const API_KEY = "BURAYA_GEMINI_API_KEY";
 
+let chats = JSON.parse(localStorage.getItem("chats")||"[]");
+let current = null;
+
+function save(){
+localStorage.setItem("chats",JSON.stringify(chats));
+}
+
+function newChat(){
+
+let chat = {id:Date.now(),title:"Yeni Sohbet",messages:[]};
+
+chats.unshift(chat);
+current = chat.id;
+
+renderChats();
+renderMessages();
+save();
+
+}
+
+function renderChats(){
+
+let list = document.getElementById("chatList");
+list.innerHTML="";
+
+chats.forEach(c=>{
+
+let div=document.createElement("div");
+div.className="chatItem";
+div.innerText=c.title;
+
+div.onclick=()=>{
+current=c.id;
+renderMessages();
+};
+
+list.appendChild(div);
+
+});
+
+}
+
+function renderMessages(){
+
+let area=document.getElementById("messages");
+area.innerHTML="";
+
+let chat = chats.find(x=>x.id===current);
+if(!chat) return;
+
+chat.messages.forEach(m=>{
+area.innerHTML+=`
+<div class="msg ${m.role}">${m.text}</div>
+`;
+});
+
+}
+
 async function send(){
 
-let text = document.getElementById("input").value;
+let input=document.getElementById("input");
+let text=input.value;
 if(!text) return;
 
-document.getElementById("chat").innerHTML +=
-`<div class="msg user">${text}</div>`;
+if(!current) newChat();
 
-document.getElementById("input").value="";
+let chat = chats.find(x=>x.id===current);
+
+if(chat.messages.length===0){
+chat.title=text.slice(0,20);
+}
+
+chat.messages.push({role:"user",text});
+renderMessages();
+
+input.value="";
 
 const res = await fetch(
 `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${API_KEY}`,
@@ -99,8 +213,9 @@ contents:[{
 parts:[{
 text:`
 Sen ASS APP adlı bir yapay zekasın.
-Çok uzun, açıklayıcı, öğretici cevap ver.
-Matematik, tarih, fen, Türkçe, sosyal bilgiler ve kodlama sorularını çöz.
+Uzun, detaylı, öğretici cevap ver.
+Kod yazabilirsin.
+Matematik, tarih, fen, Türkçe sorularını çöz.
 
 Soru:
 ${text}
@@ -115,12 +230,17 @@ const data = await res.json();
 
 let answer =
 data.candidates?.[0]?.content?.parts?.[0]?.text
-|| "Cevap alınamadı";
+|| "Hata oluştu";
 
-document.getElementById("chat").innerHTML +=
-`<div class="msg ai">${answer}</div>`;
+chat.messages.push({role:"ai",text:answer});
+
+save();
+renderMessages();
+renderChats();
 
 }
+
+renderChats();
 
 </script>
 
