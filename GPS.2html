@@ -8,22 +8,17 @@
 
 <style>
 body { margin:0; font-family:Arial; }
-header { background:#1e90ff; color:white; padding:10px; text-align:center; font-size:20px; }
-#panel { padding:10px; text-align:center; }
-input { width:70%; padding:10px; }
-button { padding:10px; }
+header { background:#1e90ff; color:white; padding:10px; text-align:center; }
+button { width:100%; padding:15px; font-size:16px; }
 #map { height:85vh; }
 </style>
 </head>
 
 <body>
 
-<header>ASS APP GPS</header>
+<header>ASS APP GPS - Konumum</header>
 
-<div id="panel">
-    <input id="searchBox" placeholder="Yer adı yaz...">
-    <button onclick="searchLocation()">ARA</button>
-</div>
+<button onclick="getLocation()">📍 Konumumu Göster</button>
 
 <div id="map"></div>
 
@@ -38,28 +33,30 @@ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
 
 let marker;
 
-async function searchLocation() {
-    let place = document.getElementById("searchBox").value;
+function getLocation() {
 
-    let res = await fetch(
-        `https://nominatim.openstreetmap.org/search?format=json&q=${place}`
-    );
+    if (navigator.geolocation) {
 
-    let data = await res.json();
+        navigator.geolocation.getCurrentPosition(position => {
 
-    if (data.length > 0) {
-        let lat = data[0].lat;
-        let lon = data[0].lon;
+            let lat = position.coords.latitude;
+            let lon = position.coords.longitude;
 
-        if (marker) map.removeLayer(marker);
+            if (marker) map.removeLayer(marker);
 
-        marker = L.marker([lat, lon]).addTo(map)
-            .bindPopup(place)
-            .openPopup();
+            marker = L.marker([lat, lon])
+                .addTo(map)
+                .bindPopup("📍 Sen buradasın")
+                .openPopup();
 
-        map.setView([lat, lon], 15);
+            map.setView([lat, lon], 17);
+
+        }, () => {
+            alert("Konum izni reddedildi!");
+        });
+
     } else {
-        alert("Konum bulunamadı!");
+        alert("Tarayıcı GPS desteklemiyor!");
     }
 }
 </script>
