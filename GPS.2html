@@ -1,199 +1,68 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent">
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<title>ASS APP GPS</title>
 
-    <EditText
-        android:id="@+id/searchBox"
-        android:hint="Yer adı yaz..."
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
+<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
 
-    <Button
-        android:id="@+id/searchButton"
-        android:text="Ara"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
+<style>
+body { margin:0; font-family:Arial; }
+header { background:#1e90ff; color:white; padding:10px; text-align:center; font-size:20px; }
+#panel { padding:10px; text-align:center; }
+input { width:70%; padding:10px; }
+button { padding:10px; }
+#map { height:85vh; }
+</style>
+</head>
 
-    <fragment
-        android:id="@+id/map"
-        android:name="com.google.android.gms.maps.SupportMapFragment"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+<body>
 
-</LinearLayout>package com.assapp.gps
+<header>ASS APP GPS</header>
 
-import android.location.Geocoder
-import android.os.Bundle
-import android.widget.Button
-import android.widget.EditText
-import androidx.appcompat.app.AppCompatActivity
-import com.google.android.gms.maps.CameraUpdateFactory
-import com.google.android.gms.maps.GoogleMap
-import com.google.android.gms.maps.OnMapReadyCallback
-import com.google.android.gms.maps.SupportMapFragment
-import com.google.android.gms.maps.model.LatLng
-import com.google.android.gms.maps.model.MarkerOptions
-import java.util.Locale
+<div id="panel">
+    <input id="searchBox" placeholder="Yer adı yaz...">
+    <button onclick="searchLocation()">ARA</button>
+</div>
 
-class MainActivity : AppCompatActivity(), OnMapReadyCallback {
+<div id="map"></div>
 
-    private lateinit var map: GoogleMap
-    private lateinit var searchBox: EditText
-    private lateinit var searchButton: Button
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+<script>
+let map = L.map('map').setView([39.0, 35.0], 6);
 
-        searchBox = findViewById(R.id.searchBox)
-        searchButton = findViewById(R.id.searchButton)
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '© OpenStreetMap'
+}).addTo(map);
 
-        val mapFragment =
-            supportFragmentManager.findFragmentById(R.id.map)
-                    as SupportMapFragment
+let marker;
 
-        mapFragment.getMapAsync(this)
+async function searchLocation() {
+    let place = document.getElementById("searchBox").value;
 
-        searchButton.setOnClickListener {
-            searchLocation(searchBox.text.toString())
-        }
-    }
+    let res = await fetch(
+        `https://nominatim.openstreetmap.org/search?format=json&q=${place}`
+    );
 
-    override fun onMapReady(googleMap: GoogleMap) {
-        map = googleMap
-    }
+    let data = await res.json();
 
-    private fun searchLocation(place: String) {
-        try {
-            val geocoder = Geocoder(this, Locale.getDefault())
-            val results = geocoder.getFromLocationName(place, 1)
+    if (data.length > 0) {
+        let lat = data[0].lat;
+        let lon = data[0].lon;
 
-            if (!results.isNullOrEmpty()) {
+        if (marker) map.removeLayer(marker);
 
-                val location = results[0]
+        marker = L.marker([lat, lon]).addTo(map)
+            .bindPopup(place)
+            .openPopup();
 
-                val point = LatLng(
-                    location.latitude,
-                    location.longitude
-                )
-
-                map.clear()
-
-                map.addMarker(
-                    MarkerOptions()
-                        .position(point)
-                        .title(place)
-                )
-
-                map.animateCamera(
-                    CameraUpdateFactory.newLatLngZoom(
-                        point,
-                        15f
-                    )
-                )
-            }
-
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
-    }
-}<manifest xmlns:android="http://schemas.android.com/apk/res/android">
-
-    <uses-permission android:name="android.permission.INTERNET"/>
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
-
-    <application
-        android:allowBackup="true"
-        android:label="ASS APP"
-        android:theme="@style/Theme.AppCompat.Light.NoActionBar">
-
-        <meta-data
-            android:name="com.google.android.geo.API_KEY"
-            android:value="BURAYA_API_KEY"/>
-
-        <activity android:name=".MainActivity">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
-                <category android:name="android.intent.category.LAUNCHER"/>
-            </intent-filter>
-        </activity>
-
-    </application>
-
-</manifest><LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent">
-
-    <EditText
-        android:id="@+id/searchBox"
-        android:hint="Yer ara..."
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
-
-    <Button
-        android:id="@+id/searchBtn"
-        android:text="ARA"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
-
-    <fragment
-        android:id="@+id/map"
-        android:name="com.google.android.gms.maps.SupportMapFragment"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
-
-</LinearLayout>package com.assapp.gps
-
-import android.location.Geocoder
-import android.os.Bundle
-import android.widget.Button
-import android.widget.EditText
-import androidx.appcompat.app.AppCompatActivity
-import com.google.android.gms.maps.*
-import com.google.android.gms.maps.model.*
-import java.util.*
-
-class MainActivity : AppCompatActivity(), OnMapReadyCallback {
-
-    private lateinit var map: GoogleMap
-    private lateinit var searchBox: EditText
-    private lateinit var searchBtn: Button
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
-
-        searchBox = findViewById(R.id.searchBox)
-        searchBtn = findViewById(R.id.searchBtn)
-
-        val mapFragment =
-            supportFragmentManager.findFragmentById(R.id.map)
-                    as SupportMapFragment
-
-        mapFragment.getMapAsync(this)
-
-        searchBtn.setOnClickListener {
-            searchLocation(searchBox.text.toString())
-        }
-    }
-
-    override fun onMapReady(googleMap: GoogleMap) {
-        map = googleMap
-    }
-
-    private fun searchLocation(place: String) {
-        val geocoder = Geocoder(this, Locale.getDefault())
-        val results = geocoder.getFromLocationName(place, 1)
-
-        if (!results.isNullOrEmpty()) {
-            val loc = results[0]
-            val point = LatLng(loc.latitude, loc.longitude)
-
-            map.clear()
-            map.addMarker(MarkerOptions().position(point).title(place))
-            map.animateCamera(CameraUpdateFactory.newLatLngZoom(point, 15f))
-        }
+        map.setView([lat, lon], 15);
+    } else {
+        alert("Konum bulunamadı!");
     }
 }
+</script>
+
+</body>
+</html>
