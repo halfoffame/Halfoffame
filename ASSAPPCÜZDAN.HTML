@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="tr" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ASS APP CÜZDAN - 3333365</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        cyber: {
+                            50: '#f0fdf4',
+                            500: '#22c55e',
+                            600: '#16a34a',
+                            900: '#14532d',
+                            950: '#052e16',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .glow-green {
+            box-shadow: 0 0 25px rgba(34, 197, 94, 0.25);
+        }
+        .glow-card {
+            box-shadow: 0 10px 30px -10px rgba(34, 197, 94, 0.3);
+        }
+    </style>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen flex items-center justify-center p-0 sm:p-4">
+
+    <div class="w-full max-w-md bg-slate-900 sm:rounded-3xl shadow-2xl overflow-hidden border border-slate-800 flex flex-col h-screen sm:h-[850px] relative">
+        
+        <header class="p-5 flex items-center justify-between border-b border-slate-800/60 bg-slate-900/80 backdrop-blur-md sticky top-0 z-20">
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-cyber-500 to-emerald-700 flex items-center justify-center glow-green font-bold text-black text-xl">
+                    A
+                </div>
+                <div>
+                    <h1 class="font-bold text-lg tracking-wide bg-gradient-to-r from-cyber-400 to-emerald-200 bg-clip-text text-transparent">ASS CÜZDAN</h1>
+                    <p class="text-xs text-slate-400 font-mono">ID: #3333365</p>
+                </div>
+            </div>
+            <div class="flex items-center space-x-2">
+                <button onclick="showNotification('Bildirimler güncel.')" class="p-2.5 rounded-xl bg-slate-800/80 hover:bg-slate-800 text-slate-300 transition relative">
+                    <i data-lucide="bell" class="w-5 h-5"></i>
+                    <span class="absolute top-2 right-2 w-2 h-2 bg-cyber-500 rounded-full animate-pulse"></span>
+                </button>
+                <button onclick="showNotification('Güvenlik seviyesi: Maksimum')" class="p-2.5 rounded-xl bg-slate-800/80 hover:bg-slate-800 text-cyber-400 transition">
+                    <i data-lucide="shield-check" class="w-5 h-5"></i>
+                </button>
+            </div>
+        </header>
+
+        <main class="flex-1 overflow-y-auto p-5 space-y-6 pb-24">
+            
+            <div class="relative rounded-2xl bg-gradient-to-br from-slate-900 via-emerald-950/40 to-slate-900 p-6 border border-cyber-500/30 glow-card overflow-hidden">
+                <div class="absolute -right-10 -bottom-10 w-40 h-40 bg-cyber-500/10 rounded-full blur-2xl pointer-events-none"></div>
+                <div class="flex justify-between items-start mb-6">
+                    <div>
+                        <span class="text-xs uppercase tracking-wider text-slate-400 font-medium">Toplam Bakiye</span>
+                        <div class="flex items-baseline space-x-2 mt-1">
+                            <h2 id="balance-display" class="text-3xl font-extrabold text-white tracking-tight">₺148,750.40</h2>
+                            <span class="text-xs text-cyber-400 font-semibold bg-cyber-500/10 px-2 py-0.5 rounded-full border border-cyber-500/20">+12.4%</span>
+                        </div>
+                    </div>
+                    <div class="p-2.5 bg-cyber-500/10 rounded-xl border border-cyber-500/20 text-cyber-400">
+                        <i data-lucide="wallet" class="w-6 h-6"></i>
+                    </div>
+                </div>
+
+                <div class="flex items-center justify-between pt-4 border-t border-slate-800/80 text-xs text-slate-400">
+                    <div class="flex items-center space-x-1.5">
+                        <i data-lucide="lock" class="w-3.5 h-3.5 text-cyber-500"></i>
+                        <span>Cüzdan No: <strong class="text-slate-200 font-mono">3333365</strong></span>
+                    </div>
+                    <button onclick="copyWalletId()" class="text-cyber-400 hover:text-cyber-300 font-medium flex items-center space-x-1 transition">
+                        <i data-lucide="copy" class="w-3.5 h-3.5"></i>
+                        <span>Kopyala</span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-4 gap-3">
+                <button onclick="openModal('Gönder', 'Para göndermek istediğiniz cüzdan ID veya adresini girin.')" class="flex flex-col items-center justify-center p-3 rounded-2xl bg-slate-900/90 border border-slate-800 hover:border-cyber-500/50 hover:bg-slate-800/80 transition group">
+                    <div class="w-12 h-12 rounded-xl bg-cyber-500/10 border border-cyber-500/20 flex items-center justify-center text-cyber-400 group-hover:scale-110 transition duration-300 mb-2">
+                        <i data-lucide="arrow-up-right" class="w-6 h-6"></i>
+                    </div>
+                    <span class="text-xs font-medium text-slate-300">Gönder</span>
+                </button>
+
+                <button onclick="openModal('Para Al', 'QR kodunuzu taratarak anında ödeme alabilirsiniz.')" class="flex flex-col items-center justify-center p-3 rounded-2xl bg-slate-900/90 border border-slate-800 hover:border-cyber-500/50 hover:bg-slate-800/80 transition group">
+                    <div class="w-12 h-12 rounded-xl bg-cyber-500/10 border border-cyber-500/20 flex items-center justify-center text-cyber-400 group-hover:scale-110 transition duration-300 mb-2">
+                        <i data-lucide="arrow-down-left" class="w-6 h-6"></i>
+                    </div>
+                    <span class="text-xs font-medium text-slate-300">Para Al</span>
+                </button>
+
+                <button onclick="openModal('Yatır / Top Up', 'Hesabınıza güvenli bir şekilde bakiye yükleyin.')" class="flex flex-col items-center justify-center p-3 rounded-2xl bg-slate-900/90 border border-slate-800 hover:border-cyber-500/50 hover:bg-slate-800/80 transition group">
+                    <div class="w-12 h-12 rounded-xl bg-cyber-500/10 border border-cyber-500/20 flex items-center justify-center text-cyber-400 group-hover:scale-110 transition duration-300 mb-2">
+                        <i data-lucide="plus-circle" class="w-6 h-6"></i>
+                    </div>
+                    <span class="text-xs font-medium text-slate-300">Yükle</span>
+                </button>
+
+                <button onclick="switchTab('history')" class="flex flex-col items-center justify-center p-3 rounded-2xl bg-slate-900/90 border border-slate-800 hover:border-cyber-500/50 hover:bg-slate-800/80 transition group">
+                    <div class="w-12 h-12 rounded-xl bg-cyber-500/10 border border-cyber-500/20 flex items-center justify-center text-cyber-400 group-hover:scale-110 transition duration-300 mb-2">
+                        <i data-lucide="history" class="w-6 h-6"></i>
+                    </div>
+                    <span class="text-xs font-medium text-slate-300">Geçmiş</span>
+                </button>
+            </div>
+
+            <div class="space-y-3">
+                <div class="flex items-center justify-between">
+                    <h3 class="font-semibold text-sm text-slate-200">Varlıklarım</h3>
+                    <span class="text-xs text-cyber-400 cursor-pointer hover:underline">Tümü</span>
+                </div>
+                <div class="space-y-2">
+                    <div class="flex items-center justify-between p-3.5 rounded-2xl bg-slate-900/60 border border-slate-800/80 hover:bg-slate-800/50 transition">
+                        <div class="flex items-center space-x-3">
+                            <div class="w-10 h-10 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-400 font-bold">
+                                ₿
+                            </div>
+                            <div>
+                                <h4 class="font-semibold text-sm text-white">Bitcoin</h4>
+                                <p class="text-xs text-slate-400">0.42 BTC</p>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <span class="font-semibold text-sm text-white">₺42,100.00</span>
+                            <p class="text-xs text-cyber-400">+4.2%</p>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center justify-between p-3.5 rounded-2xl bg-slate-900/60 border border-slate-800/80 hover:bg-slate-800/50 transition">
+                        <div class="flex items-center space-x-3">
+                            <div class="w-10 h-10 rounded-xl bg-cyber-500/10 border border-cyber-500/20 flex items-center justify-center text-cyber-400 font-bold">
+                                A
+                            </div>
+                            <div>
+                                <h4 class="font-semibold text-sm text-white">ASS Token</h4>
+                                <p class="text-xs text-slate-400">12,500 ASS</p>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <span class="font-semibold text-sm text-white">₺89,650.00</span>
+                            <p class="text-xs text-cyber-400">+18.6%</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="space-y-3">
+                <div class="flex items-center justify-between">
+                    <h3 class="font-semibold text-sm text-slate-200">Son İşlemler</h3>
+                    <span class="text-xs text-slate-400 font-mono">ID: 3333365</span>
+                </div>
+                
+                <div id="transactions-list" class="space-y-2.5">
+                    <div class="flex items-center justify-between p-3.5 rounded-2xl bg-slate-900/60 border border-slate-800/80">
+                        <div class="flex items-center space-x-3">
+                            <div class="w-10 h-10 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400">
+                                <i data-lucide="arrow-down-left" class="w-5 h-5"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-medium text-sm text-white">Para Yüklendi</h4>
+                                <p class="text-xs text-slate-400">Bugün, 14:20</p>
+                            </div>
+                        </div>
+                        <span class="font-semibold text-sm text-emerald-400">+₺5,000.00</span>
+                    </div>
+
+                    <div class="flex items-center justify-between p-3.5 rounded-2xl bg-slate-900/60 border border-slate-800/80">
+                        <div class="flex items-center space-x-3">
+                            <div class="w-10 h-10 rounded-xl bg-rose-500/10 border border-rose-500/20 flex items-center justify-center text-rose-400">
+                                <i data-lucide="arrow-up-right" class="w-5 h-5"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-medium text-sm text-white">Transfer (#8821)</h4>
+                                <p class="text-xs text-slate-400">Dün, 19:45</p>
+                            </div>
+                        </div>
+                        <span class="font-semibold text-sm text-rose-400">-₺1,250.00</span>
+                    </div>
+
+                    <div class="flex items-center justify-between p-3.5 rounded-2xl bg-slate-900/60 border border-slate-800/80">
+                        <div class="flex items-center space-x-3">
+                            <div class="w-10 h-10 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400">
+                                <i data-lucide="arrow-down-left" class="w-5 h-5"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-medium text-sm text-white">Ödeme Alındı</h4>
+                                <p class="text-xs text-slate-400">22 Eylül, 11:10</p>
+                            </div>
+                        </div>
+                        <span class="font-semibold text-sm text-emerald-400">+₺14,800.00</span>
+                    </div>
+                </div>
+            </div>
+
+        </main>
+
+        <nav class="absolute bottom-0 left-0 right-0 bg-slate-900/95 backdrop-blur-lg border-t border-slate-800/80 px-6 py-3 flex items-center justify-between z-30">
+            <button onclick="setActiveTab(this)" class="flex flex-col items-center space-y-1 text-cyber-400 transition">
+                <i data-lucide="home" class="w-5 h-5"></i>
+                <span class="text-[10px] font-medium">Ana Sayfa</span>
+            </button>
+            <button onclick="setActiveTab(this)" class="flex flex-col items-center space-y-1 text-slate-400 hover:text-slate-200 transition">
+                <i data-lucide="pie-chart" class="w-5 h-5"></i>
+                <span class="text-[10px] font-medium">Varlıklar</span>
+            </button>
+            <button onclick="setActiveTab(this)" class="flex flex-col items-center space-y-1 text-slate-400 hover:text-slate-200 transition">
+                <i data-lucide="credit-card" class="w-5 h-5"></i>
+                <span class="text-[10px] font-medium">Kartlar</span>
+            </button>
+            <button onclick="setActiveTab(this)" class="flex flex-col items-center space-y-1 text-slate-400 hover:text-slate-200 transition">
+                <i data-lucide="user" class="w-5 h-5"></i>
+                <span class="text-[10px] font-medium">Profil</span>
+            </button>
+        </nav>
+
+        <div id="action-modal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4 animate-fade-in">
+            <div class="bg-slate-900 border border-slate-800 rounded-3xl p-6 w-full max-w-sm space-y-5 shadow-2xl relative">
+                <div class="flex items-center justify-between">
+                    <h3 id="modal-title" class="font-bold text-lg text-white">İşlem</h3>
+                    <button onclick="closeModal()" class="p-1 rounded-xl bg-slate-800 text-slate-400 hover:text-white transition">
+                        <i data-lucide="x" class="w-5 h-5"></i>
+                    </button>
+                </div>
+                <p id="modal-desc" class="text-xs text-slate-400">Detayları giriniz.</p>
+                
+                <div class="space-y-3">
+                    <div>
+                        <label class="text-xs text-slate-400 block mb-1">Tutar (TL)</label>
+                        <input id="modal-amount" type="number" placeholder="0.00" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-cyber-500 font-mono">
+                    </div>
+                </div>
+
+                <button onclick="executeAction()" class="w-full bg-gradient-to-r from-cyber-500 to-emerald-600 text-slate-950 font-bold py-3.5 rounded-xl hover:from-cyber-400 hover:to-emerald-500 transition shadow-lg shadow-cyber-500/20">
+                    İşlemi Onayla
+                </button>
+            </div>
+        </div>
+
+        <div id="toast" class="fixed top-6 left-1/2 -translate-x-1/2 bg-slate-900 border border-cyber-500/40 text-slate-200 px-4 py-2.5 rounded-2xl shadow-xl z-50 flex items-center space-x-2 text-xs font-medium opacity-0 pointer-events-none transition-all duration-300">
+            <i data-lucide="check-circle-2" class="w-4 h-4 text-cyber-400"></i>
+            <span id="toast-text">İşlem başarıyla tamamlandı.</span>
+        </div>
+
+    </div>
+
+    <script>
+        // Initialize Lucide icons
+        lucide.createIcons();
+
+        let currentActionType = '';
+        let currentBalance = 148750.40;
+
+        function copyWalletId() {
+            // Using safe fallback clipboard copy
+            const dummy = document.createElement('textarea');
+            document.body.appendChild(dummy);
+            dummy.value = '3333365';
+            dummy.select();
+            document.execCommand('copy');
+            document.body.removeChild(dummy);
+            
+            showNotification('Cüzdan Numarası Kopyalandı: #3333365');
+        }
+
+        function showNotification(message) {
+            const toast = document.getElementById('toast');
+            const toastText = document.getElementById('toast-text');
+            toastText.textContent = message;
+            toast.classList.remove('opacity-0', 'pointer-events-none');
+            toast.classList.add('opacity-100');
+
+            setTimeout(() => {
+                toast.classList.remove('opacity-100');
+                toast.classList.add('opacity-0', 'pointer-events-none');
+            }, 3000);
+        }
+
+        function openModal(title, desc) {
+            currentActionType = title;
+            document.getElementById('modal-title').textContent = title;
+            document.getElementById('modal-desc').textContent = desc;
+            document.getElementById('modal-amount').value = '';
+            document.getElementById('action-modal').classList.remove('hidden');
+        }
+
+        function closeModal() {
+            document.getElementById('action-modal').classList.add('hidden');
+        }
+
+        function executeAction() {
+            const amountInput = document.getElementById('modal-amount');
+            const val = parseFloat(amountInput.value);
+            if (isNaN(val) || val <= 0) {
+                showNotification('Lütfen geçerli bir tutar girin!');
+                return;
+            }
+
+            if (currentActionType.includes('Gönder') || currentActionType.includes('Transfer')) {
+                if (val > currentBalance) {
+                    showNotification('Yetersiz bakiye!');
+                    return;
+                }
+                currentBalance -= val;
+                addTransactionToHistory('Transfer (Giden)', -val, 'rose');
+            } else {
+                currentBalance += val;
+                addTransactionToHistory('Para Yüklendi', val, 'emerald');
+            }
+
+            // Update balance display
+            document.getElementById('balance-display').textContent = '₺' + currentBalance.toLocaleString('tr-TR', { minimumFractionDigits: 2 });
+            closeModal();
+            showNotification(currentActionType + ' işlemi başarılı!');
+        }
+
+        function addTransactionToHistory(title, amount, color) {
+            const list = document.getElementById('transactions-list');
+            const isPos = amount > 0;
+            const sign = isPos ? '+' : '';
+            const colorClass = isPos ? 'text-emerald-400' : 'text-rose-400';
+            const iconName = isPos ? 'arrow-down-left' : 'arrow-up-right';
+            const bgClass = isPos ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400' : 'bg-rose-500/10 border-rose-500/20 text-rose-400';
+
+            const item = document.createElement('div');
+            item.className = 'flex items-center justify-between p-3.5 rounded-2xl bg-slate-900/60 border border-slate-800/80 animate-fade-in';
+            item.innerHTML = `
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 rounded-xl ${bgClass} flex items-center justify-center">
+                        <i data-lucide="${iconName}" class="w-5 h-5"></i>
+                    </div>
+                    <div>
+                        <h4 class="font-medium text-sm text-white">${title}</h4>
+                        <p class="text-xs text-slate-400">Şimdi</p>
+                    </div>
+                </div>
+                <span class="font-semibold text-sm ${colorClass}">${sign}₺${Math.abs(amount).toLocaleString('tr-TR', { minimumFractionDigits: 2 })}</span>
+            `;
+            list.insertBefore(item, list.firstChild);
+            lucide.createIcons();
+        }
+
+        function setActiveTab(btn) {
+            const navButtons = btn.parentElement.querySelectorAll('button');
+            navButtons.forEach(b => {
+                b.classList.remove('text-cyber-400');
+                b.classList.add('text-slate-400');
+            });
+            btn.classList.remove('text-slate-400');
+            btn.classList.add('text-cyber-400');
+            showNotification('Sayfa değiştirildi.');
+        }
+
+        function switchTab(tabName) {
+            showNotification('Geçmiş sekmesine yönlendirildi.');
+        }
+    </script>
+</body>
+</html>
