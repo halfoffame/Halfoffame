@@ -1,248 +1,431 @@
 <!DOCTYPE html>
-<html lang="tr">
+<html lang="tr" class="dark">
 <head>
-<meta charset="UTF-8">
-<title>ASS APP PRO</title>
-
-<style>
-body{
-margin:0;
-display:flex;
-height:100vh;
-font-family:Arial;
-background:#202123;
-color:white;
-}
-
-/* SIDEBAR */
-.sidebar{
-width:260px;
-background:#171717;
-display:flex;
-flex-direction:column;
-}
-
-.sidebar h2{
-padding:15px;
-margin:0;
-border-bottom:1px solid #333;
-}
-
-button{
-margin:10px;
-padding:10px;
-background:#10a37f;
-color:white;
-border:none;
-cursor:pointer;
-border-radius:6px;
-}
-
-.chatList{
-flex:1;
-overflow:auto;
-}
-
-.chatItem{
-padding:10px;
-margin:5px;
-background:#2a2b32;
-cursor:pointer;
-border-radius:5px;
-}
-
-/* MAIN */
-.main{
-flex:1;
-display:flex;
-flex-direction:column;
-}
-
-.messages{
-flex:1;
-padding:15px;
-overflow:auto;
-}
-
-.msg{
-padding:10px;
-margin:10px 0;
-border-radius:8px;
-max-width:80%;
-}
-
-.user{
-background:#444654;
-margin-left:auto;
-}
-
-.ai{
-background:#2b2c36;
-}
-
-.inputArea{
-display:flex;
-padding:10px;
-background:#343541;
-}
-
-input{
-flex:1;
-padding:12px;
-border:none;
-outline:none;
-}
-
-.sendBtn{
-background:#10a37f;
-color:white;
-border:none;
-padding:12px;
-cursor:pointer;
-}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ASS APP - Yapay Zeka Asistanı</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#f5f3ff',
+                            100: '#ede9fe',
+                            500: '#8b5cf6',
+                            600: '#7c3aed',
+                            700: '#6d28d9',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        /* Custom scrollbar for clean UI */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: rgba(156, 163, 175, 0.5); border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: rgba(156, 163, 175, 0.8); }
+        
+        @keyframes pulse-slow {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.4; }
+        }
+        .animate-pulse-slow { animation: pulse-slow 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
+    </style>
 </head>
+<body class="bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-100 h-screen flex overflow-hidden transition-colors duration-300">
 
-<body>
+    <!-- Sidebar / Sohbet Geçmişi -->
+    <aside id="sidebar" class="fixed inset-y-0 left-0 z-50 w-72 bg-white dark:bg-slate-800 border-r border-slate-200 dark:border-slate-700 flex flex-col transition-transform duration-300 -translate-x-full md:translate-x-0 md:static shadow-lg md:shadow-none">
+        <!-- Sidebar Header -->
+        <div class="p-4 border-b border-slate-200 dark:border-slate-700 flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-violet-600 to-indigo-500 flex items-center justify-center text-white shadow-md shadow-violet-500/20">
+                    <i class="fa-solid fa-brain text-lg"></i>
+                </div>
+                <div>
+                    <h1 class="font-bold text-lg tracking-wide bg-gradient-to-r from-violet-600 to-indigo-500 bg-clip-text text-transparent">ASS APP</h1>
+                    <p class="text-xs text-slate-400 font-medium">Yapay Zeka Platformu</p>
+                </div>
+            </div>
+            <button onclick="toggleSidebar()" class="md:hidden text-slate-500 hover:text-slate-700 dark:hover:text-slate-300 p-2 rounded-lg">
+                <i class="fa-solid fa-xmark text-lg"></i>
+            </button>
+        </div>
 
-<div class="sidebar">
-<h2>ASS APP PRO</h2>
-<button onclick="newChat()">+ Yeni Sohbet</button>
-<div class="chatList" id="chatList"></div>
-</div>
+        <!-- New Chat Button -->
+        <div class="p-4">
+            <button onclick="startNewChat()" class="w-full flex items-center justify-center space-x-2 bg-violet-600 hover:bg-violet-700 active:scale-[0.98] text-white px-4 py-3 rounded-xl font-medium shadow-lg shadow-violet-600/25 transition-all">
+                <i class="fa-solid fa-plus"></i>
+                <span>Yeni Sohbet</span>
+            </button>
+        </div>
 
-<div class="main">
+        <!-- Chat History List -->
+        <div class="flex-1 overflow-y-auto px-3 py-2 space-y-1" id="chatHistoryList">
+            <div class="text-xs font-semibold text-slate-400 px-3 py-2 uppercase tracking-wider">Bugün</div>
+            <div onclick="switchChat('chat-1')" id="history-chat-1" class="group flex items-center justify-between px-3 py-2.5 rounded-xl bg-violet-50 dark:bg-slate-700/50 text-violet-700 dark:text-violet-300 font-medium text-sm cursor-pointer transition-colors">
+                <div class="flex items-center space-x-3 truncate">
+                    <i class="fa-regular fa-message text-xs opacity-75"></i>
+                    <span class="truncate">Yapay Zeka ve Gelecek</span>
+                </div>
+                <button onclick="deleteChat(event, 'chat-1')" class="opacity-0 group-hover:opacity-100 text-slate-400 hover:text-red-500 p-1 transition-opacity">
+                    <i class="fa-solid fa-trash-can text-xs"></i>
+                </button>
+            </div>
+            <div onclick="switchChat('chat-2')" id="history-chat-2" class="group flex items-center justify-between px-3 py-2.5 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-700/30 text-slate-600 dark:text-slate-300 font-medium text-sm cursor-pointer transition-colors">
+                <div class="flex items-center space-x-3 truncate">
+                    <i class="fa-regular fa-message text-xs opacity-75"></i>
+                    <span class="truncate">Python Hata Çözümü</span>
+                </div>
+                <button onclick="deleteChat(event, 'chat-2')" class="opacity-0 group-hover:opacity-100 text-slate-400 hover:text-red-500 p-1 transition-opacity">
+                    <i class="fa-solid fa-trash-can text-xs"></i>
+                </button>
+            </div>
+        </div>
 
-<div class="messages" id="messages"></div>
+        <!-- Sidebar Footer / Settings & Theme -->
+        <div class="p-4 border-t border-slate-200 dark:border-slate-700 space-y-2">
+            <button onclick="toggleTheme()" class="w-full flex items-center justify-between px-3 py-2.5 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-700/50 text-slate-600 dark:text-slate-300 font-medium text-sm transition-colors">
+                <div class="flex items-center space-x-3">
+                    <i id="themeIcon" class="fa-solid fa-moon w-5 text-center"></i>
+                    <span id="themeText">Koyu Mod</span>
+                </div>
+                <div class="w-8 h-4 bg-slate-300 dark:bg-violet-600 rounded-full relative transition-colors">
+                    <div id="themeDot" class="w-3 h-3 bg-white rounded-full absolute top-0.5 left-0.5 dark:left-4.5 transition-all"></div>
+                </div>
+            </button>
+            <div class="flex items-center space-x-3 px-3 py-2">
+                <div class="w-8 h-8 rounded-full bg-violet-500 flex items-center justify-center text-white font-bold text-xs">U</div>
+                <div class="flex-1 truncate">
+                    <p class="text-xs font-semibold truncate">Kullanıcı</p>
+                    <p class="text-[10px] text-emerald-500 font-medium flex items-center space-x-1">
+                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 inline-block animate-pulse"></span>
+                        <span>Çevrim içi</span>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </aside>
 
-<div class="inputArea">
-<input id="input" placeholder="Mesaj yaz...">
-<button class="sendBtn" onclick="send()">Gönder</button>
-</div>
+    <!-- Ana İçerik Alanı -->
+    <main class="flex-1 flex flex-col h-full relative overflow-hidden bg-white dark:bg-slate-900">
+        <!-- Top Navbar -->
+        <header class="h-16 border-b border-slate-200 dark:border-slate-700 flex items-center justify-between px-4 md:px-6 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md z-10">
+            <div class="flex items-center space-x-3">
+                <button onclick="toggleSidebar()" class="md:hidden text-slate-500 hover:text-slate-700 dark:hover:text-slate-300 p-2 rounded-lg">
+                    <i class="fa-solid fa-bars text-lg"></i>
+                </button>
+                <div class="flex items-center space-x-2">
+                    <span class="font-semibold text-base" id="currentChatTitle">Yapay Zeka ve Gelecek</span>
+                    <span class="text-xs px-2 py-0.5 rounded-full bg-violet-100 dark:bg-violet-900/50 text-violet-600 dark:text-violet-300 font-medium">ASS v2.5</span>
+                </div>
+            </div>
+            <div class="flex items-center space-x-2">
+                <button onclick="clearCurrentChat()" title="Sohbeti Temizle" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 p-2 rounded-lg transition-colors">
+                    <i class="fa-solid fa-rotate-right"></i>
+                </button>
+            </div>
+        </header>
 
-</div>
+        <!-- Chat Messages Container -->
+        <div id="chatContainer" class="flex-1 overflow-y-auto p-4 md:p-6 space-y-6">
+            <!-- AI Welcome Message -->
+            <div class="flex items-start space-x-4 max-w-3xl mx-auto">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-violet-600 to-indigo-500 flex-shrink-0 flex items-center justify-center text-white shadow-md shadow-violet-500/20">
+                    <i class="fa-solid fa-brain"></i>
+                </div>
+                <div class="flex-1 space-y-2">
+                    <div class="flex items-center space-x-2">
+                        <span class="font-semibold text-sm">ASS APP</span>
+                        <span class="text-xs text-slate-400">Az önce</span>
+                    </div>
+                    <div class="prose dark:prose-invert text-slate-700 dark:text-slate-300 text-sm leading-relaxed bg-slate-50 dark:bg-slate-800/60 p-4 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-sm">
+                        <p>Merhaba! Ben <strong>ASS APP</strong>. Size bugün nasıl yardımcı olabilirim? Kodlama, yaratıcı yazarlık, analiz veya herhangi bir konuda bana sorular sorabilirsiniz.</p>
+                    </div>
+                    <!-- Quick Suggestions -->
+                    <div class="flex flex-wrap gap-2 pt-2">
+                        <button onclick="sendQuickPrompt('Yapay zeka gelecekte dünyayı nasıl değiştirecek?')" class="text-xs bg-slate-100 hover:bg-violet-50 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 hover:text-violet-600 dark:hover:text-violet-300 px-3 py-1.5 rounded-lg border border-slate-200 dark:border-slate-700 transition-all">
+                            ✨ Yapay zeka geleceği nasıl etkiler?
+                        </button>
+                        <button onclick="sendQuickPrompt('Bana Python ile basit bir web sunucusu kodu yazar mısın?')" class="text-xs bg-slate-100 hover:bg-violet-50 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 hover:text-violet-600 dark:hover:text-violet-300 px-3 py-1.5 rounded-lg border border-slate-200 dark:border-slate-700 transition-all">
+                            💻 Python ile web sunucusu yaz
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-<script>
+        <!-- Chat Input Area -->
+        <div class="p-4 md:p-6 bg-gradient-to-t from-white via-white to-transparent dark:from-slate-900 dark:via-slate-900 dark:to-transparent">
+            <div class="max-w-3xl mx-auto">
+                <form id="chatForm" onsubmit="handleChatSubmit(event)" class="relative flex items-center bg-slate-100 dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 focus-within:border-violet-500 dark:focus-within:border-violet-500 focus-within:ring-2 focus-within:ring-violet-500/20 transition-all shadow-sm">
+                    <textarea id="userInput" rows="1" placeholder="ASS APP'ye bir şeyler yazın..." onkeydown="handleKeyDown(event)" class="w-full bg-transparent px-4 py-3.5 pr-12 text-sm focus:outline-none resize-none max-h-32 text-slate-800 dark:text-slate-100 placeholder-slate-400"></textarea>
+                    <div class="absolute right-2 bottom-2 flex items-center space-x-1">
+                        <button type="submit" id="sendButton" class="w-9 h-9 rounded-xl bg-violet-600 hover:bg-violet-700 text-white flex items-center justify-center transition-all disabled:opacity-40 disabled:hover:bg-violet-600">
+                            <i class="fa-solid fa-paper-plane text-xs"></i>
+                        </button>
+                    </div>
+                </form>
+                <p class="text-center text-[11px] text-slate-400 mt-2">ASS APP büyük dil modelleri simülasyonu ile çalışır. Hatalar yapabilir.</p>
+            </div>
+        </div>
+    </main>
 
-const API_KEY = "BURAYA_GEMINI_API_KEY";
+    <!-- JavaScript Application Logic -->
+    <script>
+        // State Management
+        let currentTheme = 'dark';
+        let chats = {
+            'chat-1': { title: 'Yapay Zeka ve Gelecek', messages: [] },
+            'chat-2': { title: 'Python Hata Çözümü', messages: [] }
+        };
+        let activeChatId = 'chat-1';
 
-let chats = JSON.parse(localStorage.getItem("chats")||"[]");
-let current = null;
+        // Theme Toggle Functionality
+        function toggleTheme() {
+            const html = document.documentElement;
+            const themeIcon = document.getElementById('themeIcon');
+            const themeText = document.getElementById('themeText');
+            
+            if (html.classList.contains('dark')) {
+                html.classList.remove('dark');
+                currentTheme = 'light';
+                themeIcon.className = 'fa-solid fa-sun w-5 text-center text-amber-500';
+                themeText.innerText = 'Açık Mod';
+            } else {
+                html.classList.add('dark');
+                currentTheme = 'dark';
+                themeIcon.className = 'fa-solid fa-moon w-5 text-center';
+                themeText.innerText = 'Koyu Mod';
+            }
+        }
 
-function save(){
-localStorage.setItem("chats",JSON.stringify(chats));
-}
+        // Sidebar Toggle for Mobile
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            sidebar.classList.toggle('-translate-x-full');
+        }
 
-function newChat(){
+        // Auto-resize textarea
+        const userInput = document.getElementById('userInput');
+        userInput.addEventListener('input', function() {
+            this.style.height = 'auto';
+            this.style.height = (this.scrollHeight) + 'px';
+        });
 
-let chat = {id:Date.now(),title:"Yeni Sohbet",messages:[]};
+        function handleKeyDown(event) {
+            if (event.key === 'Enter' && !event.shiftKey) {
+                event.preventDefault();
+                handleChatSubmit(event);
+            }
+        }
 
-chats.unshift(chat);
-current = chat.id;
+        // Send Quick Prompt
+        function sendQuickPrompt(promptText) {
+            userInput.value = promptText;
+            handleChatSubmit(new Event('submit'));
+        }
 
-renderChats();
-renderMessages();
-save();
+        // Handle Chat Submission
+        function handleChatSubmit(event) {
+            event.preventDefault();
+            const text = userInput.value.trim();
+            if (!text) return;
 
-}
+            // Clear input & reset height
+            userInput.value = '';
+            userInput.style.height = 'auto';
 
-function renderChats(){
+            // Append User Message
+            appendMessage('user', text);
 
-let list = document.getElementById("chatList");
-list.innerHTML="";
+            // Trigger AI Simulated Response with typing effect
+            setTimeout(() => {
+                simulateAIResponse(text);
+            }, 600);
+        }
 
-chats.forEach(c=>{
+        // Append Message to UI
+        function appendMessage(sender, text) {
+            const container = document.getElementById('chatContainer');
+            const messageId = 'msg-' + Date.now();
+            
+            let htmlContent = '';
+            if (sender === 'user') {
+                htmlContent = `
+                    <div class="flex items-start justify-end space-x-4 max-w-3xl mx-auto">
+                        <div class="flex-1 space-y-2 text-right">
+                            <div class="flex items-center justify-end space-x-2">
+                                <span class="text-xs text-slate-400">Şimdi</span>
+                                <span class="font-semibold text-sm">Siz</span>
+                            </div>
+                            <div class="inline-block text-left prose dark:prose-invert text-white text-sm leading-relaxed bg-violet-600 p-4 rounded-2xl shadow-sm max-w-xl">
+                                <p>${escapeHtml(text)}</p>
+                            </div>
+                        </div>
+                        <div class="w-10 h-10 rounded-xl bg-slate-200 dark:bg-slate-700 flex-shrink-0 flex items-center justify-center text-slate-600 dark:text-slate-200 font-bold text-sm shadow-sm">
+                            U
+                        </div>
+                    </div>
+                `;
+            } else {
+                htmlContent = `
+                    <div id="${messageId}" class="flex items-start space-x-4 max-w-3xl mx-auto">
+                        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-violet-600 to-indigo-500 flex-shrink-0 flex items-center justify-center text-white shadow-md shadow-violet-500/20">
+                            <i class="fa-solid fa-brain"></i>
+                        </div>
+                        <div class="flex-1 space-y-2">
+                            <div class="flex items-center space-x-2">
+                                <span class="font-semibold text-sm">ASS APP</span>
+                                <span class="text-xs text-slate-400">Şimdi</span>
+                            </div>
+                            <div class="ai-response-box prose dark:prose-invert text-slate-700 dark:text-slate-300 text-sm leading-relaxed bg-slate-50 dark:bg-slate-800/60 p-4 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-sm">
+                                <p class="typing-indicator flex items-center space-x-1.5 text-slate-400">
+                                    <span class="w-2 h-2 rounded-full bg-violet-500 animate-bounce"></span>
+                                    <span class="w-2 h-2 rounded-full bg-violet-500 animate-bounce [animation-delay:0.2s]"></span>
+                                    <span class="w-2 h-2 rounded-full bg-violet-500 animate-bounce [animation-delay:0.4s]"></span>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
 
-let div=document.createElement("div");
-div.className="chatItem";
-div.innerText=c.title;
+            container.insertAdjacentHTML('beforeend', htmlContent);
+            container.scrollTop = container.scrollHeight;
+            return messageId;
+        }
 
-div.onclick=()=>{
-current=c.id;
-renderMessages();
-};
+        // Simulate Realistic AI Response
+        function simulateAIResponse(userText) {
+            const aiMsgId = appendMessage('ai', '');
+            const msgBox = document.querySelector(`#${aiMsgId} .ai-response-box`);
 
-list.appendChild(div);
+            // Intelligent mock answers based on input
+            let responseText = `Harika bir soru! ASS APP olarak bu konuyu inceledim: "${userText}" ifadesi oldukça derin ve üzerinde düşünülmesi gereken bir alan. Yapay zeka sistemleri günümüzde dil işleme, veri analitiği ve otomasyon konularında muazzam bir devrim yaratmaktadır. Size bu süreçte en güncel algoritmalar ve pratik ipuçlarıyla destek olabilirim. Başka hangi detayları öğrenmek istersiniz?`;
 
-});
+            if (userText.toLowerCase().includes('python') || userText.toLowerCase().includes('kod')) {
+                responseText = `Elbette! Python ile hızlı bir web sunucusu kurmak için aşağıdaki standart kütüphaneyi kullanabilirsiniz:\n\n\`\`\`python\nimport http.server\nimport socketserver\n\nPORT = 8000\nHandler = http.server.SimpleHTTPRequestHandler\n\nwith socketserver.TCPServer(("", PORT), Handler) as httpd:\n    print(f"Sunucu çalışıyor: http://localhost:{PORT}")\n    httpd.serve_forever()\n\`\`\`\n\nBu kodu çalıştırmak için terminale \`python dosya_adi.py\` yazmanız yeterlidir!`;
+            } else if (userText.toLowerCase().includes('gelecek') || userText.toLowerCase().includes('dünya')) {
+                responseText = `Yapay zeka gelecekte tıp, eğitim, finans ve üretim gibi sektörleri kökten dönüştürecektir. İnsan ve makine iş birliği sayesinde karmaşık hastalıkların tedavisinden kişiselleştirilmiş öğrenme modellerine kadar pek çok alanda çığır açıcı gelişmeler beklenmektedir.`;
+            }
 
-}
+            // Typing effect simulation
+            let i = 0;
+            msgBox.innerHTML = '';
+            
+            function typeWriter() {
+                if (i < responseText.length) {
+                    // Handle line breaks for markdown code/text simulation
+                    let char = responseText.charAt(i);
+                    if (char === '\n') {
+                        msgBox.innerHTML += '<br>';
+                    } else {
+                        msgBox.innerHTML += char;
+                    }
+                    i++;
+                    const container = document.getElementById('chatContainer');
+                    container.scrollTop = container.scrollHeight;
+                    setTimeout(typeWriter, 12);
+                }
+            }
+            typeWriter();
+        }
 
-function renderMessages(){
+        // Helper: Escape HTML
+        function escapeHtml(text) {
+            const map = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' };
+            return text.replace(/[&<>"']/g, function(m) { return map[m]; });
+        }
 
-let area=document.getElementById("messages");
-area.innerHTML="";
+        // New Chat Management
+        function startNewChat() {
+            const newId = 'chat-' + Date.now();
+            chats[newId] = { title: 'Yeni Sohbet', messages: [] };
+            activeChatId = newId;
+            
+            document.getElementById('currentChatTitle').innerText = 'Yeni Sohbet';
+            document.getElementById('chatContainer').innerHTML = `
+                <div class="flex items-start space-x-4 max-w-3xl mx-auto">
+                    <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-violet-600 to-indigo-500 flex-shrink-0 flex items-center justify-center text-white shadow-md shadow-violet-500/20">
+                        <i class="fa-solid fa-brain"></i>
+                    </div>
+                    <div class="flex-1 space-y-2">
+                        <div class="flex items-center space-x-2">
+                            <span class="font-semibold text-sm">ASS APP</span>
+                            <span class="text-xs text-slate-400">Az önce</span>
+                        </div>
+                        <div class="prose dark:prose-invert text-slate-700 dark:text-slate-300 text-sm leading-relaxed bg-slate-50 dark:bg-slate-800/60 p-4 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-sm">
+                            <p>Yeni bir oturum başlattık! Size nasıl yardımcı olabilirim?</p>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            // Update sidebar list
+            const historyList = document.getElementById('chatHistoryList');
+            historyList.insertAdjacentHTML('afterbegin', `
+                <div onclick="switchChat('${newId}')" id="history-${newId}" class="group flex items-center justify-between px-3 py-2.5 rounded-xl bg-violet-50 dark:bg-slate-700/50 text-violet-700 dark:text-violet-300 font-medium text-sm cursor-pointer transition-colors">
+                    <div class="flex items-center space-x-3 truncate">
+                        <i class="fa-regular fa-message text-xs opacity-75"></i>
+                        <span class="truncate">Yeni Sohbet</span>
+                    </div>
+                    <button onclick="deleteChat(event, '${newId}')" class="opacity-0 group-hover:opacity-100 text-slate-400 hover:text-red-500 p-1 transition-opacity">
+                        <i class="fa-solid fa-trash-can text-xs"></i>
+                    </button>
+                </div>
+            `);
+        }
 
-let chat = chats.find(x=>x.id===current);
-if(!chat) return;
+        function switchChat(chatId) {
+            activeChatId = chatId;
+            // Highlight active in sidebar
+            document.querySelectorAll('[id^="history-"]').forEach(el => {
+                el.className = "group flex items-center justify-between px-3 py-2.5 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-700/30 text-slate-600 dark:text-slate-300 font-medium text-sm cursor-pointer transition-colors";
+            });
+            const activeEl = document.getElementById('history-' + chatId);
+            if (activeEl) {
+                activeEl.className = "group flex items-center justify-between px-3 py-2.5 rounded-xl bg-violet-50 dark:bg-slate-700/50 text-violet-700 dark:text-violet-300 font-medium text-sm cursor-pointer transition-colors";
+                document.getElementById('currentChatTitle').innerText = chats[chatId] ? chats[chatId].title : 'Sohbet';
+            }
+        }
 
-chat.messages.forEach(m=>{
-area.innerHTML+=`
-<div class="msg ${m.role}">${m.text}</div>
-`;
-});
+        function deleteChat(event, chatId) {
+            event.stopPropagation();
+            const el = document.getElementById('history-' + chatId);
+            if (el) el.remove();
+            delete chats[chatId];
+        }
 
-}
-
-async function send(){
-
-let input=document.getElementById("input");
-let text=input.value;
-if(!text) return;
-
-if(!current) newChat();
-
-let chat = chats.find(x=>x.id===current);
-
-if(chat.messages.length===0){
-chat.title=text.slice(0,20);
-}
-
-chat.messages.push({role:"user",text});
-renderMessages();
-
-input.value="";
-
-const res = await fetch(
-`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${API_KEY}`,
-{
-method:"POST",
-headers:{"Content-Type":"application/json"},
-body:JSON.stringify({
-contents:[{
-parts:[{
-text:`
-Sen ASS APP adlı bir yapay zekasın.
-Uzun, detaylı, öğretici cevap ver.
-Kod yazabilirsin.
-Matematik, tarih, fen, Türkçe sorularını çöz.
-
-Soru:
-${text}
-`
-}]
-}]
-})
-}
-);
-
-const data = await res.json();
-
-let answer =
-data.candidates?.[0]?.content?.parts?.[0]?.text
-|| "Hata oluştu";
-
-chat.messages.push({role:"ai",text:answer});
-
-save();
-renderMessages();
-renderChats();
-
-}
-
-renderChats();
-
-</script>
-
+        function clearCurrentChat() {
+            document.getElementById('chatContainer').innerHTML = `
+                <div class="flex items-start space-x-4 max-w-3xl mx-auto">
+                    <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-violet-600 to-indigo-500 flex-shrink-0 flex items-center justify-center text-white shadow-md shadow-violet-500/20">
+                        <i class="fa-solid fa-brain"></i>
+                    </div>
+                    <div class="flex-1 space-y-2">
+                        <div class="flex items-center space-x-2">
+                            <span class="font-semibold text-sm">ASS APP</span>
+                            <span class="text-xs text-slate-400">Şimdi</span>
+                        </div>
+                        <div class="prose dark:prose-invert text-slate-700 dark:text-slate-300 text-sm leading-relaxed bg-slate-50 dark:bg-slate-800/60 p-4 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-sm">
+                            <p>Sohbet temizlendi. Yeni sorularınızla devam edebilirsiniz!</p>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+    </script>
 </body>
 </html>
