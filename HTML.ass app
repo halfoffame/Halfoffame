@@ -1,0 +1,67 @@
+from openai import OpenAI
+import streamlit as st
+
+# Sayfa Yapılandırması ve Başlık
+st.set_page_config(
+    page_title="ASS APP", page_icon="🤖", layout="centered"
+)
+
+st.title("🤖 ASS APP")
+st.caption(
+    "Yapay zeka asistanınız hazır! (Yerel LLM ve Streamlit entegrasyonu)"
+)
+
+# OpenAI / Ollama İstemcisini Ayarlama
+# Yerelde Ollama çalıştırıyorsanız base_url genellikle http://localhost:11434/v1 adresidir.
+client = OpenAI(
+    base_url="http://localhost:11434/v1",
+    api_key="yok",  # Yerel kullanımlarda API key zorunlu değildir
+)
+
+# Sohbet geçmişini saklamak için Session State başlatma
+if "messages" not in st.session_state:
+    st.session_state.messages = [
+        {
+            "role": "system",
+            "content": "Sen yardımsever, akıllı ve Türkçe konuşan bir yapay zeka asistanısın.",
+        }
+    ]
+
+# Daha önce yazılmış mesajları ekranda gösterme (Sistem mesajı hariç tutulur)
+for message in st.session_state.messages:
+    if message["role"] != "system":
+        with st.chat_message(message["role"]):
+            st.markdown(message["content"])
+
+# Kullanıcıdan mesaj alma
+if prompt := st.chat_input("ASS APP'ye bir şeyler sor..."):
+    # Kullanıcının mesajını geçmişe ekle ve ekranda göster
+    st.session_state.messages.append({"role": "user", "content": prompt})
+    with st.chat_message("user"):
+        st.markdown(prompt)
+
+    # Yapay zekadan yanıt alma süreci
+    with st.chat_message("assistant"):
+        message_placeholder = st.empty()
+        message_placeholder.markdown("Düşünüyor...")
+
+        try:
+            # Modele istek gönderme
+            response = client.chat.completions.create(
+                model="llama3",  # Bilgisayarınızda yüklü olan model adı (örn: llama3, mistral vb.)
+                messages=st.session_state.messages,
+                stream=False,  # İstersen True yaparak akıcı (streaming) yanıtlar da alabilirsin
+            )
+
+            # Modelden gelen yanıtı alma
+            ai_response = response.choices[0].message.content
+            message_placeholder.markdown(ai_response)
+
+            # Asistanın yanıtını geçmişe kaydetme
+            st.session_state.messages.append(
+                {"role": "assistant", "content": ai_response}
+            )
+
+        except Exception as e:
+            error_message = f"Bir hata oluştu: Lütfen Ollama'nın açık olduğundan ve modelin indirildiğinden emin olun.\n\n(Hata Detayı: {e})"
+            message_placeholder.markdown(error_message)
