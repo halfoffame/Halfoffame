@@ -1,60 +1,529 @@
 <!DOCTYPE html>
-<html>
+<html lang="tr" class="light">
 <head>
-<meta charset="utf-8">
-<title>ASS APP GPS</title>
-
-<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
-
-<style>
-body { margin:0; font-family:Arial; }
-header { background:#1e90ff; color:white; padding:10px; text-align:center; }
-button { width:100%; padding:15px; font-size:16px; }
-#map { height:85vh; }
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ASS APP - Harita ve Navigasyon Sistemi</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        maps: {
+                            bg: '#f8f9fa',
+                            surface: '#ffffff',
+                            border: '#dadce0',
+                            primary: '#1a73e8',
+                            hover: '#f1f3f4',
+                            text: '#202124',
+                            subtext: '#5f6368'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- FontAwesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap');
+        body { font-family: 'Roboto', sans-serif; }
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: #f1f3f4; }
+        ::-webkit-scrollbar-thumb { background: #dadce0; border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: #bdc1c6; }
+        /* Leaflet custom overrides */
+        .leaflet-popup-content-wrapper { border-radius: 8px; box-shadow: 0 4px 16px rgba(0,0,0,0.15); }
+    </style>
 </head>
+<body class="bg-maps-bg text-maps-text h-screen w-screen overflow-hidden flex flex-col">
 
-<body>
+    <!-- Top Navigation Bar (Google Maps Style) -->
+    <header class="h-16 bg-maps-surface border-b border-maps-border px-4 flex items-center justify-between z-40 shrink-0 shadow-sm">
+        <div class="flex items-center space-x-4 w-full max-w-xl">
+            <!-- App Logo / Title -->
+            <div class="flex items-center space-x-2 shrink-0">
+                <div class="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center text-white font-bold shadow-md">
+                    <i class="fa-solid fa-map-location-dot text-lg"></i>
+                </div>
+                <span class="text-xl font-bold tracking-wider text-blue-600">ASS APP</span>
+            </div>
 
-<header>ASS APP GPS</header>
+            <!-- Search Bar Input -->
+            <div class="relative flex-grow">
+                <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-maps-subtext">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                </div>
+                <input type="text" id="search-input" placeholder="ASS APP'te ara (Örn: Kadıköy, Taksim...)" 
+                    class="w-full pl-10 pr-10 py-2.5 bg-maps-hover border border-transparent hover:border-maps-border focus:border-blue-500 focus:bg-white rounded-full text-sm outline-none transition-all shadow-sm">
+                <button onclick="clearSearch()" id="clear-search-btn" class="absolute inset-y-0 right-0 pr-3.5 hidden items-center text-maps-subtext hover:text-maps-text">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+        </div>
 
-<button onclick="getLocation()">📍 Konumumu Göster</button>
+        <!-- Right Header Tools -->
+        <div class="flex items-center space-x-3">
+            <button onclick="toggleRoutePanel()" class="px-4 py-2 bg-blue-50 hover:bg-blue-100 text-blue-600 rounded-full text-sm font-medium transition-colors flex items-center space-x-2">
+                <i class="fa-solid fa-diamond-turn-right"></i>
+                <span class="hidden sm:inline">Yol Tarifi</span>
+            </button>
+            <button onclick="getCurrentUserLocation()" class="p-2.5 rounded-full hover:bg-maps-hover text-maps-subtext hover:text-maps-text transition-colors" title="Konumumu Bul">
+                <i class="fa-solid fa-location-crosshairs text-lg"></i>
+            </button>
+        </div>
+    </header>
 
-<div id="map"></div>
+    <!-- Main Workspace Container -->
+    <div class="flex-grow flex relative overflow-hidden">
+        
+        <!-- Collapsible Sidebar (Google Maps Style Panel) -->
+        <aside id="sidebar" class="w-full sm:w-96 bg-maps-surface border-r border-maps-border z-30 flex flex-col shadow-xl transition-all duration-300 absolute sm:relative h-full">
+            
+            <!-- Sidebar Header Tabs -->
+            <div class="flex border-b border-maps-border p-2 space-x-1 shrink-0 bg-maps-hover/50">
+                <button onclick="switchSidebarTab('explore')" id="tab-btn-explore" class="flex-1 py-2 px-3 rounded-lg text-xs font-medium bg-white shadow-sm text-blue-600 flex items-center justify-center space-x-1.5 transition-all">
+                    <i class="fa-solid fa-compass"></i>
+                    <span>Keşfet</span>
+                </button>
+                <button onclick="switchSidebarTab('route')" id="tab-btn-route" class="flex-1 py-2 px-3 rounded-lg text-xs font-medium text-maps-subtext hover:text-maps-text flex items-center justify-center space-x-1.5 transition-all">
+                    <i class="fa-solid fa-route"></i>
+                    <span>Yol Tarifi</span>
+                </button>
+                <button onclick="switchSidebarTab('favorites')" id="tab-btn-favorites" class="flex-1 py-2 px-3 rounded-lg text-xs font-medium text-maps-subtext hover:text-maps-text flex items-center justify-center space-x-1.5 transition-all">
+                    <i class="fa-solid fa-star"></i>
+                    <span>Favoriler</span>
+                </button>
+            </div>
 
-<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+            <!-- TAB 1: EXPLORE / SEARCH RESULTS -->
+            <div id="tab-explore" class="flex-grow overflow-y-auto p-4 space-y-4">
+                <div class="bg-blue-50/70 border border-blue-100 p-4 rounded-xl flex items-start space-x-3">
+                    <i class="fa-solid fa-circle-info text-blue-600 mt-0.5"></i>
+                    <div class="text-xs text-blue-900">
+                        <p class="font-semibold mb-1">ASS APP Haritalarına Hoş Geldiniz!</p>
+                        <p>Harita üzerinde herhangi bir yere tıklayarak detaylı bilgi alabilir, arama çubuğunu kullanarak adres bulabilirsiniz.</p>
+                    </div>
+                </div>
 
-<script>
-let map = L.map('map').setView([39,35],6);
+                <div>
+                    <h3 class="text-xs font-bold text-maps-subtext uppercase tracking-wider mb-3">Popüler Kategoriler</h3>
+                    <div class="grid grid-cols-2 gap-2">
+                        <button onclick="searchCategory('Cafe')" class="p-3 bg-maps-hover hover:bg-gray-200 rounded-xl text-xs font-medium flex items-center space-x-2 text-left transition-colors">
+                            <i class="fa-solid fa-mug-hot text-amber-600"></i>
+                            <span>Kafeler & Restoran</span>
+                        </button>
+                        <button onclick="searchCategory('Hotel')" class="p-3 bg-maps-hover hover:bg-gray-200 rounded-xl text-xs font-medium flex items-center space-x-2 text-left transition-colors">
+                            <i class="fa-solid fa-bed text-blue-600"></i>
+                            <span>Oteller & Konaklama</span>
+                        </button>
+                        <button onclick="searchCategory('Hospital')" class="p-3 bg-maps-hover hover:bg-gray-200 rounded-xl text-xs font-medium flex items-center space-x-2 text-left transition-colors">
+                            <i class="fa-solid fa-hospital text-red-600"></i>
+                            <span>Hastaneler & Sağlık</span>
+                        </button>
+                        <button onclick="searchCategory('Gas')" class="p-3 bg-maps-hover hover:bg-gray-200 rounded-xl text-xs font-medium flex items-center space-x-2 text-left transition-colors">
+                            <i class="fa-solid fa-gas-pump text-emerald-600"></i>
+                            <span>Akaryakıt İstasyonları</span>
+                        </button>
+                    </div>
+                </div>
 
-L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    attribution:'© OpenStreetMap'
-}).addTo(map);
+                <div id="search-results-container" class="space-y-2 pt-2">
+                    <!-- Populated dynamically -->
+                </div>
+            </div>
 
-let marker;
+            <!-- TAB 2: ROUTE PLANNER -->
+            <div id="tab-route" class="flex-grow overflow-y-auto p-4 space-y-4 hidden">
+                <h3 class="text-xs font-bold text-maps-subtext uppercase tracking-wider">Rota Planlama & Yol Tarifi</h3>
+                
+                <div class="space-y-3 bg-maps-hover p-4 rounded-xl border border-maps-border">
+                    <div>
+                        <label class="block text-[11px] font-semibold text-maps-subtext mb-1">BAŞLANGINÇ NOKTASI</label>
+                        <div class="flex space-x-2">
+                            <input type="text" id="route-start" placeholder="Konum adı veya 'Mevcut Konum'" class="w-full p-2.5 bg-white border border-maps-border rounded-lg text-xs outline-none focus:border-blue-500">
+                            <button onclick="setStartToCurrent()" class="px-3 bg-white border border-maps-border hover:bg-gray-50 rounded-lg text-xs" title="Mevcut Konumumu Kullan"><i class="fa-solid fa-location-crosshairs text-blue-600"></i></button>
+                        </div>
+                    </div>
 
-function getLocation() {
+                    <div>
+                        <label class="block text-[11px] font-semibold text-maps-subtext mb-1">VARIŞ NOKTASI</label>
+                        <input type="text" id="route-end" placeholder="Varış adresi veya koordinat (Örn: Taksim Meydanı)" class="w-full p-2.5 bg-white border border-maps-border rounded-lg text-xs outline-none focus:border-blue-500">
+                    </div>
 
-    navigator.geolocation.getCurrentPosition(pos => {
+                    <button onclick="calculateRoute()" class="w-full py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg text-xs shadow transition-colors flex items-center justify-center space-x-2">
+                        <i class="fa-solid fa-route"></i>
+                        <span>Rotayı Hesapla</span>
+                    </button>
+                </div>
 
-        let lat = pos.coords.latitude;
-        let lon = pos.coords.longitude;
+                <!-- Route Summary Card -->
+                <div id="route-summary-box" class="hidden bg-emerald-50 border border-emerald-200 p-4 rounded-xl space-y-2">
+                    <div class="flex items-center justify-between text-emerald-900 font-bold text-sm">
+                        <span><i class="fa-solid fa-circle-check text-emerald-600 mr-2"></i> Rota Hazır</span>
+                        <span id="route-distance" class="text-xs font-mono bg-emerald-200 px-2 py-0.5 rounded">0 km</span>
+                    </div>
+                    <p id="route-duration" class="text-xs text-emerald-700">Tahmini Seyahat Süresi: 0 dk</p>
+                </div>
+            </div>
 
-        if(marker) map.removeLayer(marker);
+            <!-- TAB 3: FAVORITES -->
+            <div id="tab-favorites" class="flex-grow overflow-y-auto p-4 space-y-3 hidden">
+                <div class="flex justify-between items-center">
+                    <h3 class="text-xs font-bold text-maps-subtext uppercase tracking-wider">Favori Konumlarım</h3>
+                    <button onclick="clearFavorites()" class="text-xs text-red-600 hover:underline">Tümünü Sil</button>
+                </div>
+                <div id="favorites-list-container" class="space-y-2">
+                    <!-- Populated via JS -->
+                </div>
+            </div>
 
-        marker = L.marker([lat,lon])
-            .addTo(map)
-            .bindPopup("📍 Sen buradasın")
-            .openPopup();
+        </aside>
 
-        map.setView([lat,lon],16);
+        <!-- Map Container -->
+        <main class="flex-grow h-full relative">
+            <div id="map" class="w-full h-full z-0"></div>
 
-    }, () => {
-        alert("Konum izni verilmedi!");
-    });
+            <!-- Map Layer Switcher Floating Control (Google Maps Style Top-Right) -->
+            <div class="absolute top-4 right-4 z-20 bg-white shadow-lg rounded-xl border border-maps-border overflow-hidden flex flex-col">
+                <button onclick="setMapLayer('streets')" id="layer-btn-streets" class="px-4 py-2.5 text-xs font-medium bg-blue-50 text-blue-600 hover:bg-blue-100 transition-colors flex items-center space-x-2 border-b border-maps-border">
+                    <i class="fa-solid fa-map"></i>
+                    <span>Varsayılan</span>
+                </button>
+                <button onclick="setMapLayer('satellite')" id="layer-btn-satellite" class="px-4 py-2.5 text-xs font-medium text-maps-subtext hover:bg-maps-hover transition-colors flex items-center space-x-2">
+                    <i class="fa-solid fa-earth-americas"></i>
+                    <span>Uydu Görünümü</span>
+                </button>
+            </div>
+        </main>
 
-}
-</script>
+    </div>
 
+    <!-- Notification Toast -->
+    <div id="toast" class="fixed bottom-6 right-6 z-50 transform translate-y-20 opacity-0 transition-all duration-300 bg-gray-900 text-white px-4 py-3 rounded-xl shadow-2xl flex items-center space-x-3 text-sm">
+        <i class="fa-solid fa-circle-check text-emerald-400 text-lg" id="toast-icon"></i>
+        <span id="toast-msg">İşlem başarılı.</span>
+    </div>
+
+    <!-- Leaflet JS CDN -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    
+    <script>
+        let map;
+        let currentTileLayer;
+        let currentMarker = null;
+        let routePolyline = null;
+        let searchMarkers = [];
+        
+        let currentLat = 41.0082;
+        let currentLng = 28.9784;
+        
+        let favorites = JSON.parse(localStorage.getItem('ass_app_favorites') || '[]');
+
+        window.addEventListener('DOMContentLoaded', () => {
+            initMap();
+            renderFavorites();
+        });
+
+        function initMap() {
+            map = L.map('map', { zoomControl: false }).setView([currentLat, currentLng], 13);
+
+            // Default OpenStreetMap tiles
+            currentTileLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                maxZoom: 19,
+                attribution: '&copy; OpenStreetMap'
+            }).addTo(map);
+
+            // Zoom control at bottom right
+            L.control.zoom({ position: 'bottomright' }).addTo(map);
+
+            map.on('click', function(e) {
+                placePinAt(e.latlng.lat, e.latlng.lng, "Seçilen Konum");
+            });
+        }
+
+        function setMapLayer(type) {
+            map.removeLayer(currentTileLayer);
+            
+            const btnStreets = document.getElementById('layer-btn-streets');
+            const btnSat = document.getElementById('layer-btn-satellite');
+
+            if(type === 'satellite') {
+                currentTileLayer = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+                    maxZoom: 19,
+                    attribution: 'Tiles &copy; Esri'
+                }).addTo(map);
+                btnSat.className = "px-4 py-2.5 text-xs font-medium bg-blue-50 text-blue-600 hover:bg-blue-100 transition-colors flex items-center space-x-2";
+                btnStreets.className = "px-4 py-2.5 text-xs font-medium text-maps-subtext hover:bg-maps-hover transition-colors flex items-center space-x-2 border-b border-maps-border";
+                showToast("Uydu görünümüne geçildi");
+            } else {
+                currentTileLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    maxZoom: 19,
+                    attribution: '&copy; OpenStreetMap'
+                }).addTo(map);
+                btnStreets.className = "px-4 py-2.5 text-xs font-medium bg-blue-50 text-blue-600 hover:bg-blue-100 transition-colors flex items-center space-x-2 border-b border-maps-border";
+                btnSat.className = "px-4 py-2.5 text-xs font-medium text-maps-subtext hover:bg-maps-hover transition-colors flex items-center space-x-2";
+                showToast("Varsayılan harita görünümüne geçildi");
+            }
+        }
+
+        function placePinAt(lat, lng, title) {
+            if(currentMarker) {
+                map.removeLayer(currentMarker);
+            }
+
+            const customIcon = L.divIcon({
+                className: 'custom-map-pin',
+                html: '<div style="background-color: #1a73e8; width: 24px; height: 24px; border-radius: 50%; border: 3px solid #ffffff; box-shadow: 0 3px 10px rgba(0,0,0,0.3); display:flex; align-items:center; justify-content:center; color:white; font-size:10px;"><i class="fa-solid fa-location-dot"></i></div>',
+                iconSize: [24, 24],
+                iconAnchor: [12, 12]
+            });
+
+            currentMarker = L.marker([lat, lng], { icon: customIcon }).addTo(map);
+            
+            const popupContent = `
+                <div class="p-2 space-y-2">
+                    <h4 class="font-bold text-sm text-gray-900">${title}</h4>
+                    <p class="text-xs text-gray-500 font-mono">${lat.toFixed(4)}, ${lng.toFixed(4)}</p>
+                    <button onclick="addToFavorites('${title.replace(/'/g, "")}', ${lat}, ${lng})" class="w-full py-1.5 bg-blue-50 hover:bg-blue-100 text-blue-600 rounded text-xs font-medium transition-colors">
+                        <i class="fa-solid fa-star mr-1"></i> Favorilere Ekle
+                    </button>
+                </div>
+            `;
+            currentMarker.bindPopup(popupContent).openPopup();
+        }
+
+        // Search Input Handling
+        const searchInput = document.getElementById('search-input');
+        const clearBtn = document.getElementById('clear-search-btn');
+
+        searchInput.addEventListener('input', (e) => {
+            if(e.target.value.length > 0) {
+                clearBtn.classList.remove('hidden');
+                clearBtn.classList.add('flex');
+            } else {
+                clearBtn.classList.add('hidden');
+                clearBtn.classList.remove('flex');
+            }
+        });
+
+        searchInput.addEventListener('keypress', (e) => {
+            if(e.key === 'Enter') {
+                executeSearch(searchInput.value);
+            }
+        });
+
+        function clearSearch() {
+            searchInput.value = '';
+            clearBtn.classList.add('hidden');
+            clearBtn.classList.remove('flex');
+            document.getElementById('search-results-container').innerHTML = '';
+        }
+
+        function executeSearch(query) {
+            if(!query.trim()) return;
+            showToast(`"${query}" aranıyor...`, "info");
+
+            fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}`)
+                .then(res => res.json())
+                .then(data => {
+                    const container = document.getElementById('search-results-container');
+                    container.innerHTML = '';
+                    
+                    if(data && data.length > 0) {
+                        map.setView([parseFloat(data[0].lat), parseFloat(data[0].lon)], 14);
+                        placePinAt(parseFloat(data[0].lat), parseFloat(data[0].lon), data[0].display_name);
+
+                        data.forEach(item => {
+                            const div = document.createElement('div');
+                            div.className = "p-3 bg-maps-hover hover:bg-gray-200 rounded-xl cursor-pointer transition-colors text-xs space-y-1";
+                            div.innerHTML = `
+                                <div class="font-semibold text-gray-900">${item.display_name}</div>
+                                <div class="text-maps-subtext font-mono">${parseFloat(item.lat).toFixed(4)}, ${parseFloat(item.lon).toFixed(4)}</div>
+                            `;
+                            div.onclick = () => {
+                                map.setView([parseFloat(item.lat), parseFloat(item.lon)], 15);
+                                placePinAt(parseFloat(item.lat), parseFloat(item.lon), item.display_name);
+                            };
+                            container.appendChild(div);
+                        });
+                        showToast("Arama sonuçları listelendi");
+                    } else {
+                        showToast("Sonuç bulunamadı", "error");
+                    }
+                })
+                .catch(err => {
+                    showToast("Arama hatası", "error");
+                });
+        }
+
+        function searchCategory(category) {
+            let query = "İstanbul " + category;
+            if(category === 'Cafe') query = "İstanbul kafe restoran";
+            if(category === 'Hotel') query = "İstanbul otel";
+            if(category === 'Hospital') query = "İstanbul hastane";
+            if(category === 'Gas') query = "İstanbul akaryakıt";
+            
+            searchInput.value = query;
+            executeSearch(query);
+        }
+
+        function switchSidebarTab(tab) {
+            ['explore', 'route', 'favorites'].forEach(t => {
+                document.getElementById('tab-' + t).classList.add('hidden');
+                document.getElementById('tab-btn-' + t).className = "flex-1 py-2 px-3 rounded-lg text-xs font-medium text-maps-subtext hover:text-maps-text flex items-center justify-center space-x-1.5 transition-all";
+            });
+            document.getElementById('tab-' + tab).classList.remove('hidden');
+            document.getElementById('tab-btn-' + tab).className = "flex-1 py-2 px-3 rounded-lg text-xs font-medium bg-white shadow-sm text-blue-600 flex items-center justify-center space-x-1.5 transition-all";
+        }
+
+        function toggleRoutePanel() {
+            switchSidebarTab('route');
+        }
+
+        function setStartToCurrent() {
+            document.getElementById('route-start').value = "Mevcut Konum (41.0082, 28.9784)";
+            showToast("Mevcut konum başlangıç noktası yapıldı");
+        }
+
+        function calculateRoute() {
+            const start = document.getElementById('route-start').value;
+            const end = document.getElementById('route-end').value;
+
+            if(!end) {
+                showToast("Lütfen bir varış noktası girin", "error");
+                return;
+            }
+
+            showToast("Rota hesaplanıyor...", "info");
+
+            // Geocode end destination
+            fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(end)}`)
+                .then(res => res.json())
+                .then(data => {
+                    if(data && data.length > 0) {
+                        const endLat = parseFloat(data[0].lat);
+                        const endLng = parseFloat(data[0].lon);
+
+                        // Use current center as start for routing simulation
+                        const startLat = currentLat;
+                        const startLng = currentLng;
+
+                        if(routePolyline) map.removeLayer(routePolyline);
+
+                        routePolyline = L.polyline([[startLat, startLng], [endLat, endLng]], {
+                            color: '#1a73e8',
+                            weight: 5,
+                            opacity: 0.8
+                        }).addTo(map);
+
+                        map.fitBounds(routePolyline.getBounds(), { padding: [50, 50] });
+
+                        // Calculate mock distance in km
+                        const dist = Math.hypot(endLat - startLat, endLng - startLng) * 111; // rough km conversion
+                        const duration = Math.round(dist * 3); // mins
+
+                        document.getElementById('route-summary-box').classList.remove('hidden');
+                        document.getElementById('route-distance').innerText = dist.toFixed(1) + ' km';
+                        document.getElementById('route-duration').innerText = `Tahmini Seyahat Süresi: ${duration} dk`;
+                        showToast("Rota başarıyla oluşturuldu!");
+                    } else {
+                        showToast("Varış noktası bulunamadı", "error");
+                    }
+                });
+        }
+
+        function addToFavorites(name, lat, lng) {
+            if(favorites.some(f => f.lat === lat && f.lng === lng)) {
+                showToast("Bu konum zaten favorilerde");
+                return;
+            }
+            favorites.push({ name, lat, lng });
+            localStorage.setItem('ass_app_favorites', JSON.stringify(favorites));
+            renderFavorites();
+            showToast("Favorilere eklendi!");
+        }
+
+        function renderFavorites() {
+            const container = document.getElementById('favorites-list-container');
+            container.innerHTML = '';
+            if(favorites.length === 0) {
+                container.innerHTML = '<p class="text-xs text-maps-subtext italic">Henüz favori konum eklenmemiş.</p>';
+                return;
+            }
+
+            favorites.forEach((fav, index) => {
+                const div = document.createElement('div');
+                div.className = "p-3 bg-maps-hover hover:bg-gray-200 rounded-xl flex items-center justify-between cursor-pointer transition-colors text-xs";
+                div.innerHTML = `
+                    <div>
+                        <div class="font-semibold text-gray-900">${fav.name}</div>
+                        <div class="text-maps-subtext font-mono">${fav.lat.toFixed(4)}, ${fav.lng.toFixed(4)}</div>
+                    </div>
+                    <button onclick="event.stopPropagation(); removeFavorite(${index})" class="text-red-500 hover:text-red-700 p-1"><i class="fa-solid fa-trash"></i></button>
+                `;
+                div.onclick = () => {
+                    map.setView([fav.lat, fav.lng], 15);
+                    placePinAt(fav.lat, fav.lng, fav.name);
+                };
+                container.appendChild(div);
+            });
+        }
+
+        function removeFavorite(index) {
+            favorites.splice(index, 1);
+            localStorage.setItem('ass_app_favorites', JSON.stringify(favorites));
+            renderFavorites();
+            showToast("Favorilerden kaldırıldı");
+        }
+
+        function clearFavorites() {
+            favorites = [];
+            localStorage.removeItem('ass_app_favorites');
+            renderFavorites();
+            showToast("Tüm favoriler temizlendi");
+        }
+
+        function getCurrentUserLocation() {
+            if(!navigator.geolocation) {
+                showToast("Tarayıcınız konum desteklemiyor", "error");
+                return;
+            }
+            showToast("Konumunuz alınıyor...", "info");
+            navigator.geolocation.getCurrentPosition(pos => {
+                currentLat = pos.coords.latitude;
+                currentLng = pos.coords.longitude;
+                map.setView([currentLat, currentLng], 15);
+                placePinAt(currentLat, currentLng, "Mevcut Konumunuz");
+                showToast("Konumunuza odaklanıldı");
+            }, () => {
+                showToast("Konum alınamadı", "error");
+            });
+        }
+
+        function showToast(message, type = "success") {
+            const toast = document.getElementById('toast');
+            const msgEl = document.getElementById('toast-msg');
+            const iconEl = document.getElementById('toast-icon');
+
+            msgEl.innerText = message;
+            if(type === "error") {
+                toast.className = "fixed bottom-6 right-6 z-50 transform translate-y-0 opacity-100 transition-all duration-300 bg-red-900 text-white px-4 py-3 rounded-xl shadow-2xl flex items-center space-x-3 text-sm";
+                iconEl.className = "fa-solid fa-circle-exclamation text-red-300 text-lg";
+            } else {
+                toast.className = "fixed bottom-6 right-6 z-50 transform translate-y-0 opacity-100 transition-all duration-300 bg-gray-900 text-white px-4 py-3 rounded-xl shadow-2xl flex items-center space-x-3 text-sm";
+                iconEl.className = "fa-solid fa-circle-check text-emerald-400 text-lg";
+            }
+
+            setTimeout(() => {
+                toast.className = "fixed bottom-6 right-6 z-50 transform translate-y-20 opacity-0 transition-all duration-300 bg-gray-900 text-white px-4 py-3 rounded-xl shadow-2xl flex items-center space-x-3 text-sm";
+            }, 3500);
+        }
+    </script>
 </body>
 </html>
