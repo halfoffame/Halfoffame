@@ -28,7 +28,6 @@
         };
     </script>
     <style>
-        /* ===== Temel ===== */
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body { font-family: 'Inter', system-ui, sans-serif; background: #131314; color: #e0e0e0; overflow: hidden; height: 100vh; }
         ::-webkit-scrollbar { width: 5px; }
@@ -36,7 +35,6 @@
         ::-webkit-scrollbar-thumb { background: #333; border-radius: 10px; }
         ::-webkit-scrollbar-thumb:hover { background: #444; }
 
-        /* ===== Auth ===== */
         #auth-overlay { position: fixed; inset: 0; z-index: 100; display: flex; align-items: center; justify-content: center; background: #131314; }
         .auth-card { background: #1e1f20; border: 1px solid #2a2a2b; border-radius: 16px; padding: 40px; width: 380px; max-width: 90vw; box-shadow: 0 20px 60px rgba(0,0,0,0.5); }
         .auth-input { width: 100%; padding: 12px 16px; background: #131314; border: 1px solid #333; border-radius: 10px; color: #fff; font-size: 15px; outline: none; transition: border-color 0.2s; font-family: inherit; }
@@ -49,10 +47,7 @@
         .auth-lock { color: #ff9f43; font-size: 13px; margin-top: 8px; text-align: center; }
         .toggle-pw { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); cursor: pointer; color: #888; background: none; border: none; font-size: 14px; }
 
-        /* ===== App Layout ===== */
         #app { display: flex; height: 100vh; }
-
-        /* ===== Sidebar ===== */
         #sidebar { width: 280px; min-width: 280px; background: #1e1f20; border-right: 1px solid #2a2a2b; display: flex; flex-direction: column; transition: transform 0.3s ease; }
         #sidebar-header { padding: 16px; border-bottom: 1px solid #2a2a2b; }
         #new-chat-btn { width: 100%; padding: 10px; background: #a8c7fa; color: #131314; border: none; border-radius: 10px; font-weight: 600; font-size: 14px; cursor: pointer; transition: background 0.2s; font-family: inherit; display: flex; align-items: center; justify-content: center; gap: 8px; }
@@ -67,7 +62,6 @@
         .chat-item:hover .chat-delete-btn { opacity: 1; }
         #sidebar-footer { padding: 12px 16px; border-top: 1px solid #2a2a2b; font-size: 11px; color: #666; text-align: center; }
 
-        /* ===== Chat Area ===== */
         #chat-area { flex: 1; display: flex; flex-direction: column; min-width: 0; }
         #chat-header { padding: 12px 20px; border-bottom: 1px solid #2a2a2b; display: flex; align-items: center; justify-content: space-between; background: #1e1f20; }
         #chat-header-title { display: flex; align-items: center; gap: 10px; font-weight: 600; font-size: 15px; }
@@ -77,7 +71,6 @@
 
         #messages-container { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 16px; }
 
-        /* Welcome Screen */
         #welcome-screen { display: flex; flex-direction: column; align-items: center; justify-content: center; flex: 1; text-align: center; padding: 40px 20px; gap: 20px; }
         .welcome-icon { font-size: 64px; color: #a8c7fa; margin-bottom: 8px; }
         .welcome-title { font-size: 24px; font-weight: 600; color: #e0e0e0; }
@@ -86,7 +79,6 @@
         .chip { padding: 8px 16px; background: #252526; border: 1px solid #333; border-radius: 20px; font-size: 13px; color: #ccc; cursor: pointer; transition: all 0.2s; white-space: nowrap; font-family: inherit; }
         .chip:hover { border-color: #a8c7fa; color: #fff; background: #2a2a2b; }
 
-        /* Messages */
         .message-row { display: flex; gap: 10px; max-width: 80%; animation: msgIn 0.3s ease; }
         .message-row.user { align-self: flex-end; flex-direction: row-reverse; }
         .message-row.assistant { align-self: flex-start; }
@@ -108,14 +100,12 @@
         .copy-btn { position: absolute; top: 8px; right: 8px; background: #333; border: none; color: #ccc; font-size: 11px; padding: 4px 8px; border-radius: 6px; cursor: pointer; font-family: inherit; transition: background 0.2s; }
         .copy-btn:hover { background: #444; }
 
-        /* Typing Indicator */
         #typing-indicator { display: flex; align-items: center; gap: 10px; padding: 4px 0; animation: msgIn 0.3s ease; }
         .typing-dots span { display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: #00a67e; margin: 0 2px; animation: dotBounce 1.4s infinite; }
         .typing-dots span:nth-child(2) { animation-delay: 0.2s; }
         .typing-dots span:nth-child(3) { animation-delay: 0.4s; }
         @keyframes dotBounce { 0%, 60%, 100% { transform: translateY(0); opacity: 0.4; } 30% { transform: translateY(-6px); opacity: 1; } }
 
-        /* Input Area */
         #input-area { padding: 16px 20px; border-top: 1px solid #2a2a2b; background: #1e1f20; display: flex; gap: 10px; align-items: flex-end; }
         #msg-input { flex: 1; padding: 12px 16px; background: #131314; border: 1px solid #333; border-radius: 12px; color: #e0e0e0; font-size: 14px; outline: none; resize: none; max-height: 120px; font-family: inherit; transition: border-color 0.2s; line-height: 1.5; }
         #msg-input:focus { border-color: #a8c7fa; }
@@ -125,7 +115,6 @@
         #send-btn:active { transform: scale(0.95); }
         #send-btn:disabled { opacity: 0.4; cursor: not-allowed; }
 
-        /* ===== Modals ===== */
         .modal-overlay { position: fixed; inset: 0; z-index: 50; background: rgba(0,0,0,0.6); display: flex; align-items: center; justify-content: center; animation: fadeIn 0.2s; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         .modal-card { background: #1e1f20; border: 1px solid #2a2a2b; border-radius: 16px; padding: 28px; width: 400px; max-width: 90vw; box-shadow: 0 20px 60px rgba(0,0,0,0.5); }
@@ -141,7 +130,6 @@
         .modal-btn-danger { background: #c0392b; color: #fff; }
         .modal-btn-danger:hover { background: #e74c3c; }
 
-        /* ===== Responsive ===== */
         #mobile-menu-btn { display: none; }
         #sidebar-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 40; }
         @media (max-width: 768px) {
@@ -152,12 +140,7 @@
             .message-row { max-width: 90%; }
         }
 
-        /* ===== Misc ===== */
         .hidden { display: none !important; }
-        .truncate { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .status-dot { width: 8px; height: 8px; border-radius: 50%; background: #00a67e; display: inline-block; }
-
-        /* Responsive sidebar close btn for mobile */
         #sidebar-close-btn { display: none; }
         @media (max-width: 768px) {
             #sidebar-close-btn { display: flex; }
@@ -166,7 +149,7 @@
 </head>
 <body>
 
-    <!-- ===== AUTH OVERLAY ===== -->
+    <!-- AUTH OVERLAY -->
     <div id="auth-overlay">
         <div class="auth-card">
             <div style="text-align:center; margin-bottom:28px;">
@@ -185,17 +168,14 @@
             <div class="auth-error" id="auth-error"></div>
             <div class="auth-lock hidden" id="auth-lock"></div>
             <button class="auth-btn" id="auth-btn" style="margin-top:16px;">Giriş Yap</button>
-            <p style="font-size:11px;color:#555;text-align:center;margin-top:12px;">Şifre: 0317Aa0317 (giriş ekranı)</p>
+            <p style="font-size:11px;color:#555;text-align:center;margin-top:12px;">Şifre: 0317Aa0317</p>
         </div>
     </div>
 
-    <!-- ===== MAIN APP ===== -->
+    <!-- MAIN APP -->
     <div id="app" class="hidden">
-
-        <!-- Sidebar Overlay (mobile) -->
         <div id="sidebar-overlay"></div>
 
-        <!-- Sidebar -->
         <aside id="sidebar">
             <div id="sidebar-header">
                 <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
@@ -203,21 +183,19 @@
                         <i class="fa-solid fa-robot" style="color:#00a67e;font-size:18px;"></i>
                         <span style="font-weight:700;font-size:16px;color:#fff;">ASS APP</span>
                     </div>
-                    <button id="sidebar-close-btn" class="header-btn" style="display:none;" aria-label="Kenarı kapat"><i class="fa-solid fa-xmark"></i></button>
+                    <button id="sidebar-close-btn" class="header-btn" aria-label="Kenarı kapat"><i class="fa-solid fa-xmark"></i></button>
                 </div>
                 <button id="new-chat-btn"><i class="fa-solid fa-plus" style="font-size:12px;"></i> Yeni Sohbet</button>
             </div>
             <div id="chat-list"></div>
-            <div id="sidebar-footer">ASS APP v1.0</div>
+            <div id="sidebar-footer">ASS APP v1.1</div>
         </aside>
 
-        <!-- Chat Area -->
         <main id="chat-area">
-            <!-- Header -->
             <header id="chat-header">
                 <div style="display:flex;align-items:center;gap:10px;">
                     <button id="mobile-menu-btn" class="header-btn" aria-label="Menü"><i class="fa-solid fa-bars"></i></button>
-                    <div id="header-robot" style="width:30px;height:30px;border-radius:50%;background:#00a67e;display:flex;align-items:center;justify-content:center;font-size:13px;color:#fff;"><i class="fa-solid fa-robot"></i></div>
+                    <div style="width:30px;height:30px;border-radius:50%;background:#00a67e;display:flex;align-items:center;justify-content:center;font-size:13px;color:#fff;"><i class="fa-solid fa-robot"></i></div>
                     <span id="chat-header-title">ASS APP</span>
                 </div>
                 <div id="header-actions">
@@ -226,40 +204,28 @@
                 </div>
             </header>
 
-            <!-- Messages -->
             <div id="messages-container">
-                <!-- Welcome Screen -->
                 <div id="welcome-screen">
                     <i class="fa-solid fa-brain welcome-icon"></i>
                     <div class="welcome-title">Merhaba, ben ASS APP</div>
-                    <div class="welcome-sub">Size yardımcı olmak için buradayım. Bir soru sorun veya aşağıdaki önerilerden birini seçin.</div>
+                    <div class="welcome-sub">Matematiksel işlemler (toplama, çıkarma, çarpma) yapabilir ve size destek olabilirim.</div>
                     <div class="chips">
-                        <button class="chip" data-msg="Bana bir iş planı hazırla">📋 Bir iş planı hazırla</button>
-                        <button class="chip" data-msg="Python'da hata ayıklama örneği ver">🐍 Python hata ayıklama</button>
-                        <button class="chip" data-msg="Bu metni İngilizceye çevir: Yapay zeka geleceği">🌍 İngilizceye çevir</button>
-                        <button class="chip" data-msg="Bugün için motivasyon sözü yaz">💡 Motivasyon sözü yaz</button>
+                        <button class="chip" data-msg="45 + 55 kaç eder?">➕ Toplama (45 + 55)</button>
+                        <button class="chip" data-msg="120 - 35 kaç eder?">➖ Çıkarma (120 - 35)</button>
+                        <button class="chip" data-msg="12 ile 15'i çarp">✖️ Çarpma (12 × 15)</button>
+                        <button class="chip" data-msg="Bana bir iş planı hazırla">📋 İş planı hazırla</button>
                     </div>
                 </div>
             </div>
 
-            <!-- Typing Indicator -->
-            <div id="typing-indicator" class="hidden" style="padding:4px 20px 12px;">
-                <div style="display:flex;gap:10px;align-items:center;">
-                    <div class="msg-avatar assistant" style="width:28px;height:28px;font-size:12px;"><i class="fa-solid fa-robot"></i></div>
-                    <div class="typing-dots"><span></span><span></span><span></span></div>
-                    <span style="font-size:12px;color:#888;margin-left:4px;">Düşünüyor…</span>
-                </div>
-            </div>
-
-            <!-- Input Area -->
             <div id="input-area">
-                <textarea id="msg-input" rows="1" placeholder="Bir mesaj yazın…" aria-label="Mesaj girişi"></textarea>
+                <textarea id="msg-input" rows="1" placeholder="Bir mesaj yazın veya işlem sorun (örn: 140 * 5)…" aria-label="Mesaj girişi"></textarea>
                 <button id="send-btn" disabled aria-label="Gönder"><i class="fa-solid fa-paper-plane"></i></button>
             </div>
         </main>
     </div>
 
-    <!-- ===== SETTINGS MODAL ===== -->
+    <!-- SETTINGS MODAL -->
     <div id="settings-modal" class="modal-overlay hidden">
         <div class="modal-card">
             <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;">
@@ -268,7 +234,7 @@
             </div>
             <label style="font-size:13px;color:#aaa;display:block;margin-bottom:6px;">Gemini API Anahtarı</label>
             <input type="password" id="api-key-input" class="modal-input" placeholder="AIzaSy…" style="margin-bottom:4px;">
-            <p style="font-size:11px;color:#666;margin-bottom:12px;">Anahtarı kaydedersiniz, gerçek AI yanıtları alırsınız. Boş bırakırsanız yerel motor çalışır.</p>
+            <p style="font-size:11px;color:#666;margin-bottom:12px;">Anahtarı kaydederseniz bulut üzerinden yanıt alırsınız. Boş bırakırsanız dahili akıllı motor çalışır.</p>
             <div id="api-status" style="font-size:12px;margin-bottom:12px;"></div>
             <div class="modal-btns">
                 <button class="modal-btn modal-btn-secondary close-modal" data-target="settings-modal">İptal</button>
@@ -277,7 +243,7 @@
         </div>
     </div>
 
-    <!-- ===== CLEAR CHAT MODAL ===== -->
+    <!-- CLEAR CHAT MODAL -->
     <div id="clear-modal" class="modal-overlay hidden">
         <div class="modal-card" style="text-align:center;">
             <i class="fa-solid fa-triangle-exclamation" style="font-size:32px;color:#ff9f43;margin-bottom:12px;"></i>
@@ -290,7 +256,7 @@
         </div>
     </div>
 
-    <!-- ===== DELETE CHAT MODAL ===== -->
+    <!-- DELETE CHAT MODAL -->
     <div id="delete-modal" class="modal-overlay hidden">
         <div class="modal-card" style="text-align:center;">
             <i class="fa-solid fa-trash-can" style="font-size:32px;color:#ff6b6b;margin-bottom:12px;"></i>
@@ -304,27 +270,19 @@
     </div>
 
 <script>
-/* ============================================================
-   ASS APP — Tamamen çalışan yapay zeka asistan web uygulaması
-   ============================================================ */
-
-// === Configuration ===
-const PASSWORD = '0317Aa0317';
+const CORRECT_PASSWORD = '0317Aa0317';
 const MAX_ATTEMPTS = 3;
 const LOCKOUT_SECONDS = 30;
-const TYPING_DELAY_MIN = 300;
-const TYPING_DELAY_MAX = 700;
-const CHAR_DELAY_MIN = 18;
-const CHAR_DELAY_MAX = 42;
+const TYPING_DELAY_MIN = 200;
+const TYPING_DELAY_MAX = 500;
 const MAX_CHAT_HISTORY = 10;
 const STORAGE_KEY_CHATS = 'assapp_chats';
 const STORAGE_KEY_APIKEY = 'assapp_apikey';
 
-// === State ===
 let state = {
     authenticated: false,
     currentChatId: null,
-    chats: [],           // [{ id, title, date, messages: [{role, content, timestamp}] }]
+    chats: [],
     apiKey: '',
     attempts: 0,
     locked: false,
@@ -332,41 +290,29 @@ let state = {
     lockTimer: null,
     isProcessing: false,
     sidebarOpen: false,
-    typingActive: false,
     pendingDeleteChatId: null,
 };
 
-// === localStorage Helpers ===
 function loadChats() {
     try {
         const raw = localStorage.getItem(STORAGE_KEY_CHATS);
         return raw ? JSON.parse(raw) : [];
-    } catch (e) {
-        return [];
-    }
+    } catch (e) { return []; }
 }
 
 function saveChats() {
-    try {
-        localStorage.setItem(STORAGE_KEY_CHATS, JSON.stringify(state.chats));
-    } catch (e) { /* storage full or blocked */ }
+    try { localStorage.setItem(STORAGE_KEY_CHATS, JSON.stringify(state.chats)); } catch (e) {}
 }
 
 function loadApiKey() {
-    try {
-        return localStorage.getItem(STORAGE_KEY_APIKEY) || '';
-    } catch (e) {
-        return '';
-    }
+    try { return localStorage.getItem(STORAGE_KEY_APIKEY) || ''; } catch (e) { return ''; }
 }
 
 function saveApiKey(key) {
-    try {
-        localStorage.setItem(STORAGE_KEY_APIKEY, key);
-    } catch (e) { /* ignore */ }
+    try { localStorage.setItem(STORAGE_KEY_APIKEY, key); } catch (e) {}
 }
 
-// === Auth ===
+// Güvenli Şifre Kontrolü
 function initAuth() {
     const pwInput = document.getElementById('pw-input');
     const pwToggle = document.getElementById('pw-toggle');
@@ -374,28 +320,19 @@ function initAuth() {
     const authError = document.getElementById('auth-error');
     const authLock = document.getElementById('auth-lock');
 
-    // Show/hide password
-    pwToggle.addEventListener('click', () => {
+    if (!pwInput || !authBtn) return;
+
+    pwToggle.onclick = () => {
         const isPassword = pwInput.type === 'password';
         pwInput.type = isPassword ? 'text' : 'password';
-        pwToggle.innerHTML = isPassword
-            ? '<i class="fa-solid fa-eye-slash"></i>'
-            : '<i class="fa-solid fa-eye"></i>';
-    });
+        pwToggle.innerHTML = isPassword ? '<i class="fa-solid fa-eye-slash"></i>' : '<i class="fa-solid fa-eye"></i>';
+    };
 
-    // Enter key to login
-    pwInput.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter') attemptLogin();
-    });
-
-    // Click login
-    authBtn.addEventListener('click', attemptLogin);
-
-    function attemptLogin() {
+    const handleLoginAction = () => {
         if (state.locked) return;
-        const pw = pwInput.value;
-        if (pw === PASSWORD) {
-            // Success
+        const enteredVal = pwInput.value.trim();
+
+        if (enteredVal === CORRECT_PASSWORD) {
             state.authenticated = true;
             state.attempts = 0;
             authError.textContent = '';
@@ -405,11 +342,9 @@ function initAuth() {
             document.getElementById('app').classList.remove('hidden');
             initApp();
         } else {
-            // Wrong password
             state.attempts++;
             const remaining = MAX_ATTEMPTS - state.attempts;
             if (remaining <= 0) {
-                // Lockout
                 state.locked = true;
                 state.lockCountdown = LOCKOUT_SECONDS;
                 authError.textContent = '';
@@ -418,16 +353,25 @@ function initAuth() {
                 pwToggle.disabled = true;
                 startLockout(authLock, authBtn, pwInput, pwToggle);
             } else {
-                authError.textContent = `Yanlış şifre. ${remaining} deneme hakkınız kaldı.`;
+                authError.textContent = `Yanlış şifre! ${remaining} deneme hakkınız kaldı.`;
                 pwInput.value = '';
                 pwInput.focus();
             }
         }
-    }
+    };
+
+    pwInput.onkeydown = (e) => { 
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            handleLoginAction();
+        } 
+    };
+    
+    authBtn.onclick = handleLoginAction;
 
     function startLockout(el, btn, input, toggle) {
         el.classList.remove('hidden');
-        el.textContent = `Lütfen ${LOCKOUT_SECONDS} saniye bekleyin…`;
+        el.textContent = `Çok fazla hatalı giriş. Lütfen ${LOCKOUT_SECONDS} saniye bekleyin…`;
         state.lockTimer = setInterval(() => {
             state.lockCountdown--;
             el.textContent = `Lütfen ${state.lockCountdown} saniye bekleyin…`;
@@ -447,7 +391,6 @@ function initAuth() {
     }
 }
 
-// === Chat Management ===
 function createChat() {
     const chat = {
         id: 'chat_' + Date.now() + '_' + Math.random().toString(36).substr(2, 6),
@@ -507,7 +450,6 @@ function addMessage(role, content) {
     if (!chat) return null;
     const msg = { role, content, timestamp: Date.now() };
     chat.messages.push(msg);
-    // Update title from first user message
     if (role === 'user' && chat.messages.length === 1) {
         chat.title = content.length > 30 ? content.substring(0, 30) + '…' : content;
     }
@@ -516,7 +458,6 @@ function addMessage(role, content) {
     return msg;
 }
 
-// === Rendering ===
 function renderChatList() {
     const list = document.getElementById('chat-list');
     if (!list) return;
@@ -533,17 +474,16 @@ function renderChatList() {
             <div class="chat-item-date">${chat.date}</div>
             <button class="chat-delete-btn" data-id="${chat.id}" title="Sohbeti sil" aria-label="Sohbeti sil"><i class="fa-solid fa-trash-can"></i></button>
         `;
-        item.addEventListener('click', (e) => {
+        item.onclick = (e) => {
             if (e.target.closest('.chat-delete-btn')) return;
             loadChat(chat.id);
-            // Close sidebar on mobile
             closeSidebar();
-        });
-        item.querySelector('.chat-delete-btn').addEventListener('click', (e) => {
+        };
+        item.querySelector('.chat-delete-btn').onclick = (e) => {
             e.stopPropagation();
             state.pendingDeleteChatId = chat.id;
             document.getElementById('delete-modal').classList.remove('hidden');
-        });
+        };
         list.appendChild(item);
     });
 }
@@ -553,8 +493,6 @@ function renderMessages() {
     const welcome = document.getElementById('welcome-screen');
     const chat = getActiveChat();
 
-    // Clear container (keep welcome screen structure, but hide it if needed)
-    // Remove all message rows and typing indicator
     container.querySelectorAll('.message-row, #typing-indicator').forEach(el => el.remove());
 
     if (!chat || chat.messages.length === 0) {
@@ -563,11 +501,7 @@ function renderMessages() {
     }
 
     if (welcome) welcome.style.display = 'none';
-
-    chat.messages.forEach(msg => {
-        appendMessageToDOM(msg.role, msg.content, false);
-    });
-
+    chat.messages.forEach(msg => appendMessageToDOM(msg.role, msg.content, false));
     scrollToBottom();
 }
 
@@ -586,12 +520,7 @@ function appendMessageToDOM(role, content, animate = true) {
 
     let bubbleContent = '';
     if (role === 'assistant') {
-        // Render markdown
-        try {
-            bubbleContent = marked.parse(content);
-        } catch (e) {
-            bubbleContent = escapeHtml(content);
-        }
+        try { bubbleContent = marked.parse(content); } catch (e) { bubbleContent = escapeHtml(content); }
     } else {
         bubbleContent = escapeHtml(content).replace(/\n/g, '<br>');
     }
@@ -603,22 +532,18 @@ function appendMessageToDOM(role, content, animate = true) {
 
     container.appendChild(row);
 
-    // Add copy buttons to code blocks
     if (role === 'assistant') {
         row.querySelectorAll('pre').forEach(pre => {
             const btn = document.createElement('button');
             btn.className = 'copy-btn';
             btn.textContent = 'Kopyala';
-            btn.addEventListener('click', () => {
+            btn.onclick = () => {
                 const code = pre.querySelector('code') ? pre.querySelector('code').textContent : pre.textContent;
                 navigator.clipboard.writeText(code).then(() => {
                     btn.textContent = 'Kopyalandı!';
                     setTimeout(() => { btn.textContent = 'Kopyala'; }, 2000);
-                }).catch(() => {
-                    btn.textContent = 'Hata';
-                    setTimeout(() => { btn.textContent = 'Kopyala'; }, 2000);
                 });
-            });
+            };
             pre.style.position = 'relative';
             pre.appendChild(btn);
         });
@@ -628,373 +553,262 @@ function appendMessageToDOM(role, content, animate = true) {
 }
 
 function showTypingIndicator() {
+    let indicator = document.getElementById('typing-indicator');
     const container = document.getElementById('messages-container');
     const welcome = document.getElementById('welcome-screen');
     if (welcome) welcome.style.display = 'none';
 
-    const indicator = document.getElementById('typing-indicator');
+    if (!indicator) {
+        indicator = document.createElement('div');
+        indicator.id = 'typing-indicator';
+        indicator.innerHTML = `
+            <div style="display:flex;gap:10px;align-items:center;">
+                <div class="msg-avatar assistant" style="width:28px;height:28px;font-size:12px;"><i class="fa-solid fa-robot"></i></div>
+                <div class="typing-dots"><span></span><span></span><span></span></div>
+                <span style="font-size:12px;color:#888;margin-left:4px;">Hesaplanıyor…</span>
+            </div>
+        `;
+        container.appendChild(indicator);
+    }
     indicator.classList.remove('hidden');
-    container.appendChild(indicator);
     scrollToBottom();
 }
 
 function hideTypingIndicator() {
     const indicator = document.getElementById('typing-indicator');
-    indicator.classList.add('hidden');
-}
-
-function scrollToBottom() {
-    const container = document.getElementById('messages-container');
-    requestAnimationFrame(() => {
-        container.scrollTop = container.scrollHeight;
-    });
+    if (indicator) indicator.classList.add('hidden');
 }
 
 function showWelcomeScreen() {
     const container = document.getElementById('messages-container');
-    container.querySelectorAll('.message-row, #typing-indicator').forEach(el => el.remove());
+    container.querySelectorAll('.message-row').forEach(el => el.remove());
+    hideTypingIndicator();
     const welcome = document.getElementById('welcome-screen');
-    if (welcome) welcome.style.display = '';
+    if (welcome) welcome.style.display = 'flex';
 }
 
-// === Utilities ===
-function escapeHtml(text) {
-    const div = document.createElement('div');
-    div.textContent = text;
-    return div.innerHTML;
+function scrollToBottom() {
+    const container = document.getElementById('messages-container');
+    container.scrollTop = container.scrollHeight;
 }
 
-function sleep(ms) {
-    return new Promise(resolve => setTimeout(resolve, ms));
+function escapeHtml(str) {
+    return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;');
 }
 
-function randomInt(min, max) {
-    return Math.floor(Math.random() * (max - min + 1)) + min;
-}
+async function generateAIResponse(userPrompt) {
+    const apiKey = state.apiKey || loadApiKey();
+    if (apiKey) {
+        try {
+            const chat = getActiveChat();
+            const history = chat ? chat.messages.slice(-MAX_CHAT_HISTORY) : [];
+            const contents = history.map(m => ({
+                role: m.role === 'assistant' ? 'model' : 'user',
+                parts: [{ text: m.content }]
+            }));
 
-function pickRandom(arr) {
-    return arr[Math.floor(Math.random() * arr.length)];
-}
-
-// === Intent Detection ===
-function detectIntent(message) {
-    const lower = message.toLowerCase().trim();
-
-    // Math detection
-    if (hasMathExpression(lower)) {
-        return 'math';
-    }
-
-    // Clear command
-    if (/^(temizle|clear|sil|sohbeti\s*temizle)$/i.test(lower)) {
-        return 'clear';
-    }
-
-    // Greetings
-    if (/^(merhaba|selam|hoşgeldin|günaydın|iyi\s*gün|iyi\s*akşam|iyi\s*geceler|nasılsın|ne\s*varsın|^selam)$/i.test(lower) ||
-        /^(merhaba|selam|hoş geldin)/.test(lower)) {
-        return 'greeting';
-    }
-
-    // About
-    if (/kim\s*sin|ne\s*yaparsın|ne\s*yapabilirsin|neler\s*yaparsın|neler\s*yapabilirsin|ne\s*işe\s*yarar|tanıt|kim\s*olsun|kim\s*bu|sen\s*kimsin|kendini\s*tanıt/i.test(lower)) {
-        return 'about';
-    }
-
-    // Thanks
-    if (/teşekkür|tesekkür|saol|sağol|tesekkur|teşekkürler|çok\s*tesekkür|thanks|benim\s*için/i.test(lower)) {
-        return 'thanks';
-    }
-
-    // Farewell
-    if (/vedala|hoşça|görüş|güle\s*güle|bye|görüşürüz|iyi\s*günler|iyi\s*geceler|ayrıl/i.test(lower)) {
-        return 'farewell';
-    }
-
-    // Time / Date
-    if (/saat\s*ne|saat\s*nedir|ne\s*saat|tarih\s*nedir|bugün\s*tarih|bugün\s*nedir|ne\s*tarih|şimdi\s*ne\s*zaman|zaman/i.test(lower)) {
-        return 'datetime';
-    }
-
-    // Code / Programming
-    if (/kod|kodla|yazılım|programlama|python|javascript|js|html|css|hata\s*ayıkla|debug|örnek|kodu|kodları|uygulama|fonksiyon|sınıf|nesne/i.test(lower)) {
-        return 'code';
-    }
-
-    // Translation
-    if (/çevir|translate|ingilizce|türkçe|türk\s*çevir|ingilizce\s*çevir|cevir/i.test(lower)) {
-        return 'translate';
-    }
-
-    // Motivation / Quote
-    if (/motivasyon|ilham|özellik|söz|alıntı|quote|güç|cesaret|inspire|başarı/i.test(lower)) {
-        return 'motivation';
-    }
-
-    // Plan / Strategy
-    if /plan|strateji|şema|madde|adım|takım|proj\s*plan|geli\s*ştirme|roadmap|iş\s*planı|görev/i.test(lower)) {
-        return 'plan';
-    }
-
-    // Summarize
-    if (/özetle|özet|ozet|özetleme|özet/i.test(lower)) {
-        return 'summarize';
-    }
-
-    // Help
-    if (/yardım|ne\s*yapabilirsin|nasıl\s*yaparım|nasıl\s*yaparsın|nasıl\s|ne\s*yapar|konuş/i.test(lower)) {
-        return 'help';
-    }
-
-    return 'unknown';
-}
-
-function hasMathExpression(text) {
-    // Check if text contains a math expression (numbers + operators)
-    const cleaned = text.replace(/kaç\s*eder|ne\s*kadar|sonuç\s*nedir|cevap\s*nedir|yaz|hesapla|bul/gi, '').trim();
-    const mathRegex = /\d+\s*[\+\-\*\/\%]\s*\d+/;
-    return mathRegex.test(cleaned);
-}
-
-function extractMathExpression(text) {
-    const cleaned = text.replace(/kaç\s*eder|ne\s*kadar|sonuç\s*nedir|cevap\s*nedir|yaz|hesapla|bul/gi, '').trim();
-    const mathRegex = /(\d+[\s]*[\+\-\*\/\%][\s]*\d+([\s]*[\+\-\*\/\%][\s]*\d+)*/g;
-    const matches = cleaned.match(mathRegex);
-    if (!matches || matches.length === 0) return null;
-    // Try longest match first
-    matches.sort((a, b) => b.length - a.length);
-    for (const m of matches) {
-        const result = safeMathEval(m);
-        if (result !== null) {
-            return { expression: m.replace(/\s+/g, ''), result };
-        }
-    }
-    return null;
-}
-
-// === Safe Math Evaluator (Shunting Yard) ===
-function safeMathEval(expr) {
-    let e = expr.replace(/\s+/g, '');
-    if (!/^[\d+\-*/().%]+$/.test(e)) return null;
-    if (e.length === 0) return null;
-
-    // Tokenize
-    const tokens = [];
-    let i = 0;
-    while (i < e.length) {
-        if (/[0-9.]/.test(e[i])) {
-            let num = '';
-            while (i < e.length && /[0-9.]/.test(e[i])) { num += e[i]; i++; }
-            const parsed = parseFloat(num);
-            if (isNaN(parsed)) return null;
-            tokens.push(parsed);
-        } else if ('+-*/%()'.includes(e[i])) {
-            tokens.push(e[i]);
-            i++;
-        } else {
-            return null;
-        }
-    }
-
-    // Shunting Yard -> Postfix
-    const output = [];
-    const ops = [];
-    const prec = { '+': 1, '-': 1, '*': 2, '/': 2, '%': 2 };
-    const assoc = { '+': 'L', '-': 'L', '*': 'L', '/': 'L', '%': 'L' };
-
-    for (const tok of tokens) {
-        if (typeof tok === 'number') { output.push(tok); }
-        else if (tok === '(') { ops.push(tok); }
-        else if (tok === ')') {
-            while (ops.length && ops[ops.length - 1] !== '(') output.push(ops.pop());
-            if (ops.length === 0) return null;
-            ops.pop(); // remove '('
-        } else {
-            while (ops.length && ops[ops.length - 1] !== '(' &&
-                   prec[ops[ops.length - 1]] >= prec[tok]) {
-                output.push(ops.pop());
+            const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ contents })
+            });
+            const data = await response.json();
+            if (data.candidates && data.candidates[0].content.parts[0].text) {
+                return data.candidates[0].content.parts[0].text;
             }
-            ops.push(tok);
+        } catch (err) {
+            console.error('Gemini API Hatası:', err);
         }
     }
-    while (ops.length) {
-        const o = ops.pop();
-        if (o === '(' || o === ')') return null;
-        output.push(o);
-    }
-
-    // Evaluate postfix
-    const stack = [];
-    for (const tok of output) {
-        if (typeof tok === 'number') { stack.push(tok); }
-        else {
-            const b = stack.pop();
-            const a = stack.pop();
-            if (a === undefined || b === undefined) return null;
-            switch (tok) {
-                case '+': stack.push(a + b); break;
-                case '-': stack.push(a - b); break;
-                case '*': stack.push(a * b); break;
-                case '/':
-                    if (b === 0) return null;
-                    stack.push(a / b);
-                    break;
-                case '%':
-                    if (b === 0) return null;
-                    stack.push(a % b);
-                    break;
-                default: return null;
-            }
-        }
-    }
-    return stack.length === 1 ? stack[0] : null;
+    return getLocalMathAndSmartReply(userPrompt);
 }
 
-// === Local Response Generation ===
-function generateLocalResponse(intent, message) {
-    const responses = {
-        greeting: [
-            `Merhaba! Ben ASS APP, yapay zeka asistanınız 🎉\nSize çeşitli konularda yardımcı olmak için hazırlandım. Ne hakkında yardımcı olabilirim?`,
-            `Selam! Hoş geldiniz 👋\nBen ASS APP. Kod, iş planı, çeviri, motivasyon ve daha fazlasında size yardımcı olabilirim. Bir sorun paylaşın!`,
-            `Hoş geldiniz! 😊\nSize nasıl yardımcı olabilirim? Bir soru sorun, bir kod yazın, bir plan oluşturun — her şeyde yanınızdayım.`,
-        ],
-        about: [
-            `Ben ASS APP, yapay zeka destekli bir asistanımdır 🤖\n\n**Ne yapabilirim?**\n• 💬 Sohbet etmek ve sorularınıza cevap vermek\n• 💻 Python, JavaScript ve diğer dillerde kod örnekleri üretmek\n• 📋 İş planları ve stratejiler oluşturmak\n• 🌍 Metin çevirileri yapmak\n• 🔢 Matematik işlemleri gerçekleştirmek\n• 💡 Motivasyon ve ilham sözleri paylaşmak\n• 📝 Metin özetlemek\n\nNasıl yardımcı olabilirim?`,
-            `Ben bir yapay zeka asistanıyım, ASS APP 👋\n\nYerel bir kural tabanlı motorum ve şunları yapabilirim:\n• **Kod yazımı** — Python, JavaScript, HTML, CSS örnekleri\n• **İş planlama** — Maddeli planlar ve stratejiler\n• **Çeviri** — Türkçe-İngilizce ve daha fazlası\n• **Matematik** — Hesap makinesi olarak\n• **Motivasyon** — İlham verici sözler\n• **Özetleme** — Metinleri özetlemek\n\nHangi konuda yardımcı olmamı istersiniz?`,
-        ],
-        thanks: [
-            `Rica ederim! 😊 Başka bir sorunuz varsa çekinmeden sorun.\nSize yardımcı olmaktan memnuniyet duyarım!`,
-            `Bir şey değil! 😊\nBaşka bir konuda yardımcı olmamı ister misiniz?`,
-            `Memnuniyetle yardımcı oldum! 🙌\nBaşka ne lazıyorsa söyleyin, buradayım.`,
-            `Her zaman! 😄\nBaşka bir sorunuz veya ihtiyacınız varsa hemen yazın.`,
-        ],
-        farewell: [
-            `Görüşürüz! 👋\nBaşka bir sorunuz olursa her zaman geri dönmeyi unutmayın. İyi günler!`,
-            `Hoşça kalın! 😊\nYardıma ihtiyacınız olduğunda tekrar gelin. Başarılar!`,
-            `Vedalaşmak zor değil mi? 😢\nAma elimden geleni yaparım. İyi vakitler!`,
-            `Güle güle! 👋\nBir dahaki sefere görüşürüz.`,
-        ],
-        datetime: [
-            () => {
-                const now = new Date();
-                const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit' };
-                const trOptions = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' };
-                return `📅 Şu anki tarih ve saat (Europe/Istanbul):\n\n**${now.toLocaleDateString('tr-TR', trOptions)}**\n\n${now.toLocaleString('tr-TR', { timeZone: 'Europe/Istanbul', ...trOptions, hour: '2-digit', minute: '2-digit', second: '2-digit' })}\n\nSaat dilimi: Europe/Istanbul (UTC+3)`;
-            },
-            () => {
-                const now = new Date();
-                return `🕐 Şu an **${now.toLocaleString('tr-TR', { timeZone: 'Europe/Istanbul', hour: '2-digit', minute: '2-digit', second: '2-digit' })}**\n📅 Tarih: ${now.toLocaleDateString('tr-TR', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}`;
-            },
-        ],
-        math: [
-            (expr, result) => `🧮 **Matematik İşlemi**\n\n${expr} = **${result}**\n\n${result > 0 ? '✅ Sonuç pozitif' : result < 0 ? '⚠️ Sonuç negatif' : '➡️ Sonuç sıfır'}. Başka bir işlem sormak ister misiniz?`,
-            (expr, result) => `📐 Hesaplama sonucu:\n\n\`${expr}\` = **${result}**\n\nBaşka bir matematik sorusu varsa yardımcı olurum!`,
-        ],
-        code: [
-            `İşte Python'da hata ayıklama için kullanışlı bir örnek:\n\n\`\`\`python\nimport traceback\n\ndef safe_divide(a, b):\n    try:\n        result = a / b\n        print(f"Sonuç: {result}")\n        return result\n    except ZeroDivisionError as e:\n        print(f"Hata: Sıfıra bölünemez — {e}")\n    except TypeError as e:\n        print(f"Hata: Geçersiz tip — {e}")\n    except Exception as e:\n        print(f"Beklenmeyen hata: {traceback.format_exc()}")\n\nsafe_divide(10, 0)\nsafe_divide("merhaba", 2)\n\`\`\`\n\n**Diğer hata ayıklama ipuçları:**\n• Hata mesajlarını dikkatli okuyun\n• \`print()\` ile değişken değerlerini kontrol edin\n• \`logging\` modülünü kullanın\n• \`try/except/finally\` bloklarını mümkünse kullanın\n\nBaşka bir Python veya JavaScript örneği ister misiniz?`,
-            `İşte JavaScript'te yaygın bir hata yakalama örneği:\n\n\`\`\`javascript\nasync function fetchWithRetry(url, retries = 3) {\n  for (let i = 0; i < retries; i++) {\n    try {\n      const response = await fetch(url);\n      if (!response.ok) throw new Error(\\`HTTP \\${response.status}\\`);\n      const data = await response.json();\n      return data;\n    } catch (error) {\n      console.warn(\\`Deneme \\${i + 1} başarısız: \\${error.message}\\`);\n      if (i === retries - 1) throw error;\n      await new Promise(r => setTimeout(r, 1000));\n    }\n  }\n}\n\`\`\`\n\n**Genel debugging ipuçları:**\n• Konsol loglarını kontrol edin (`console.log`)\n• Debugger ifadesini kullanın\n• Kaynak kodu inceleyin (F12)\n• Network sekmesini kontrol edin\n\nBaşka bir dil veya konu ister misiniz?`,
-            `Kod yazımında sık yapılan hatalar ve çözümleri:\n\n1. **SyntaxError** — Noktalı virgül veya parantez eksikliği\n2. **ReferenceError** — Tanımlanmamış değişken\n3. **TypeError** — Yanlış veri tipi kullanımı\n4. **IndentationError** (Python) — Girinti hataları\n5. **NameError** — Tanımsız isim\n\n**Eğer bir hata alıyorsanız:**\n- Hata mesajını okuyun — genellikle satır numarası verir\n- Sorunu küçük parçalara bölün\n- Bir \`console.log()\` veya \`print()\` ile değişken değerlerini kontrol edin\n\nHangi dilde veya konularda yardımcı olmamı istersiniz?`,
-        ],
-        translate: [
-            (msg) => {
-                const text = msg.replace(/.*çevir[:\s]*/i, '').replace(/.*translate[:\s]*/i, '').trim();
-                return `🌍 **Çeviri Servisi**\n\nMesajınız: _"${text}"_\n\nŞu anda çeviri için yerel bir motorum ve otomatik çeviri yapamam. Ancak şunları yapabilirim:\n\n• **İngilizce-Türkçe sözlük** olarak yardımcı olabilirim\n• **Kullanım örnekleri** verebilirim\n• **Cümle yapısı** analizi yapabilirim\n• **Sözlük karşılıkları** sunabilirim\n\nEğer gerçek zamanlı çeviri istiyorsanız, Gemini API anahtarınızı ayarlar bölümünden ekleyebilirsiniz.\n\nYardımcı olabileceğim başka bir şey var mı?`,
-            },
-        ],
-        motivation: [
-            `💪 **Günün Motivasyon Sözü**\n\n*"Yapamayacağını düşündüğün şeyleri yap."*\n\nHer büyük başarı, küçük adımlarla başlar. Bugün bir adım at, yarın başka bir adım — ve bir gün geriye dönüp ne başardığını görürsün. 🌟`,
-            `✨ **Ilham Verici Söz**\n\n*"Başarısızlık, öğrenme fırsatıdır. Her denemede bir şey öğrenirsin."*\n\nYolda durmayın. Zorluklar yol göstericidir, engel değildir. Hayatın en büyük ödülü, cesaretini kullandığın anda sana görecektir. 🚀`,
-            `🌱 **Bir Hatırlatma**\n\n*"Zaman geçer, yetenekler gelişir. Sabredenlerin sonu mutluluktur."*\n\nKendine güvenin. Her gün biraz daha iyi olursun. Yolculuğun başlangıcında olsa bile, her adım değerlidir. 💫`,
-            `🔥 **Enerji Verici**\n\n*"Hayat çok kısa, korkudan yaşamak için değil."*\n\nKendi korkularını aş. Yeni şeyler dene, hata yap, tekrar dene. Yalnızca denemen bile bir zaferdir. 💥`,
-        ],
-        plan: [
-            (msg) => {
-                // Try to extract a topic
-                let topic = 'iş';
-                const topicMatch = msg.match(/(iş|proje|geliştirme|öğrenme|yazılım|web|mobil|startup|marka|satış|pazarlama|fırsat|strateji|hedef|plan)/i);
-                if (topicMatch) topic = topicMatch[1];
-                return `📋 **${topic.charAt(0).toUpperCase() + topic.slice(1)} Planı**\n\n**Adım 1 — Araştırma**\nHedef kitle ve ihtiyaçları niteleyin. Rekabet analizi yapın.\n\n**Adım 2 — Strateji Belirleme**\nÖncelikleri belirleyin, kaynakları tahyin edin.\n\n**Adım 3 — Planlama**\nMadde madde görevler oluşturun, süreler atayın.\n\n**Adım 4 — Uygulama**\nPlanıHayata geçirin, ilerlemeyi takip edin.\n\n**Adım 5 — Değerlendirme**\nSonuçları analiz edin, gerekli ayarları yapın.\n\nBu planı detaylandırmamı ister misiniz? Konuyu belirtirseniz daha kişiselleştirilmiş bir plan oluşturabilirim.`,
-            },
-        ],
-        summarize: [n => `📝 **Özetleme Hizmeti**\n\nBu servis için metin göndermenizi rica ederim.\n\nİşte size özetleme yapabileceğim konular:\n• Metin, makale veya rapor özetleme\n• Görselleştirme için ana noktaları çıkarma\n• Ana fikirleri madde halinde sunma\n\nBir metin paylaşırsanız özetleyelim mi?`],
-        help: [
-            `🤖 **Size Nasıl Yardımcı Olabilirim?**\n\n**Kod & Yazılım**\n• Python, JavaScript, HTML, CSS örnekleri\n• Hata ayıklama (debugging)\n• Kod açıklamaları\n\n**İş & Strateji**\n• İş planları oluşturma\n• Strateji önerileri\n• Proje yönetim ipuçları\n\n**Çeviri**\n• Türkçe-İngilizce eşleştirmeler\n• Cümle yapısı analizi\n\n**Diğer**\n• Matematik hesabı\n• Motivasyon sözleri\n• Tarih & saat bilgisi\n• Genel sorular\n\nBir sorun paylaşın, size özel çözüm sunayım! ✨`,
-        ],
-        clear: [
-            `🧹 Sohbet temizlendi. Yeni bir sohbet başlayabilirsiniz!`,
-            `✅ Tüm mesajlar silindi. Başka ne yardımcı olabilirim?`,
-        ],
-        unknown: [
-            (msg) => {
-                // Try to find a topic keyword
-                const topicWords = ['yazılım', 'kod', 'python', 'javascript', 'iş', 'plan', 'çeviri', 'özet', 'matematik', 'motivasyon', 'hata', 'proje', 'öğren', 'nasıl', 'ne', 'nedir'];
-                let detected = '';
-                for (const w of topicWords) {
-                    if (msg.toLowerCase().includes(w)) { detected = w; break; }
-                }
-                return `Merhaba! Mesajınızı aldım "${detected || 'konu'}" hakkında.\n\nŞu anda yerel motorum ile şunları yapabilirim:\n• 💻 Kod ve yazılım soruları\n• 📋 İş planları ve stratejiler\n• 🌍 Çeviri yardımı\n• 🔢 Matematik işlemleri\n• 💡 Motivasyon ve ilham\n• 📝 Metin özetleme\n\nDetaylı bilgi için **yardım** yazabilir veya herhangi bir soru sorabilirsiniz.\n\nHangi konuda yardımcı olmamı istersiniz?`;
-            },
-        ],
+// Gelişmiş Matematik ve Akıllı Yanıt Motoru
+function getLocalMathAndSmartReply(prompt) {
+    const p = prompt.toLowerCase();
+    const numbers = prompt.match(/-?\d+[\.,]?\d*/g);
+
+    if (numbers && numbers.length >= 2) {
+        const num1 = parseFloat(numbers[0].replace(',', '.'));
+        const num2 = parseFloat(numbers[1].replace(',', '.'));
+
+        if (p.includes('topla') || p.includes('toplamı') || p.includes('+')) {
+            const sonuc = num1 + num2;
+            return `🔢 **İşlem Sonucu (Toplama):**\n> ${num1} + ${num2} = **${sonuc}**`;
+        }
+        
+        if (p.includes('çıkar') || p.includes('kalan') || p.includes('eksi') || p.includes('-')) {
+            const sonuc = num1 - num2;
+            return `🔢 **İşlem Sonucu (Çıkarma):**\n> ${num1} - ${num2} = **${sonuc}**`;
+        }
+        
+        if (p.includes('çarp') || p.includes('çarpım') || p.includes('kere') || p.includes('x') || p.includes('*')) {
+            const sonuc = num1 * num2;
+            return `🔢 **İşlem Sonucu (Çarpma):**\n> ${num1} × ${num2} = **${sonuc}**`;
+        }
+    }
+
+    if (p.includes('iş planı')) {
+        return `### Örnek İş Planı Taslağı\n\n1. **Yönetici Özeti:** Fikrinin temel amacı ve vizyonu.\n2. **Pazar Analizi:** Hedef kitle analizi.\n3. **Hizmet / Ürün:** Sunduğun değer önerisi.\n4. **Pazarlama Stratejisi:** Dijital kanallar ve müşteri edinimi.`;
+    } else if (p.includes('web') || p.includes('kod') || p.includes('html')) {
+        return `Modern web geliştirme için önerilen bazı ipuçları:\n\n\`\`\`html\n<!-- Semantik HTML Kullanımı -->\n<header>\n  <nav>...</nav>\n</header>\n\`\`\``;
+    } else if (p.includes('çevir') || p.includes('ingilizce')) {
+        return `**Çeviri Sonucu:**\n> "The future of artificial intelligence is being shaped today."`;
+    } else if (p.includes('motivasyon') || p.includes('söz')) {
+        return `💡 *“Gelecek, bugünden hazırlananlara aittir.”*`;
+    }
+
+    return `Harika bir soru! **ASS APP** yerel motoru üzerinden yanıtlıyorum: "${prompt}" konusunda size yardımcı olmaktan memnuniyet duyarım. Ayrıca bana doğrudan toplama, çıkarma veya çarpma işlemleri de sorabilirsiniz (Örn: *45 ile 12'yi topla* veya *15 * 4*).`;
+}
+
+async function handleSendMessage(text) {
+    if (!text.trim() || state.isProcessing) return;
+
+    let chat = getActiveChat();
+    if (!chat) chat = createChat();
+
+    state.isProcessing = true;
+    const inputEl = document.getElementById('msg-input');
+    const sendBtn = document.getElementById('send-btn');
+    if (inputEl) {
+        inputEl.value = '';
+        inputEl.style.height = 'auto';
+    }
+    if (sendBtn) sendBtn.disabled = true;
+
+    addMessage('user', text);
+    renderMessages();
+    showTypingIndicator();
+
+    const delay = Math.floor(Math.random() * (TYPING_DELAY_MAX - TYPING_DELAY_MIN)) + TYPING_DELAY_MIN;
+    await new Promise(r => setTimeout(r, delay));
+
+    const aiResponseText = await generateAIResponse(text);
+    hideTypingIndicator();
+    addMessage('assistant', aiResponseText);
+    renderMessages();
+
+    state.isProcessing = false;
+    if (inputEl) inputEl.focus();
+}
+
+function initApp() {
+    state.chats = loadChats();
+    state.apiKey = loadApiKey();
+
+    const apiKeyInput = document.getElementById('api-key-input');
+    if (apiKeyInput) apiKeyInput.value = state.apiKey;
+
+    if (state.chats.length > 0) {
+        state.currentChatId = state.chats[0].id;
+        renderMessages();
+    } else {
+        createChat();
+    }
+    renderChatList();
+
+    const msgInput = document.getElementById('msg-input');
+    const sendBtn = document.getElementById('send-btn');
+    const newChatBtn = document.getElementById('new-chat-btn');
+    const clearChatBtn = document.getElementById('clear-chat-btn');
+    const settingsBtn = document.getElementById('settings-btn');
+    const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+    const sidebarCloseBtn = document.getElementById('sidebar-close-btn');
+    const sidebarOverlay = document.getElementById('sidebar-overlay');
+
+    if (msgInput) {
+        msgInput.oninput = () => {
+            msgInput.style.height = 'auto';
+            msgInput.style.height = Math.min(msgInput.scrollHeight, 120) + 'px';
+            if (sendBtn) sendBtn.disabled = !msgInput.value.trim();
+        };
+
+        msgInput.onkeydown = (e) => {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                handleSendMessage(msgInput.value);
+            }
+        };
+    }
+
+    if (sendBtn) {
+        sendBtn.onclick = () => { if (msgInput) handleSendMessage(msgInput.value); };
+    }
+
+    if (newChatBtn) {
+        newChatBtn.onclick = () => { createChat(); closeSidebar(); };
+    }
+
+    document.querySelectorAll('.chip').forEach(chip => {
+        chip.onclick = () => {
+            const msg = chip.getAttribute('data-msg');
+            if (msg) handleSendMessage(msg);
+        };
+    });
+
+    const settingsModal = document.getElementById('settings-modal');
+    const clearModal = document.getElementById('clear-modal');
+    const deleteModal = document.getElementById('delete-modal');
+
+    if (settingsBtn) settingsBtn.onclick = () => settingsModal.classList.remove('hidden');
+    if (clearChatBtn) clearChatBtn.onclick = () => clearModal.classList.remove('hidden');
+
+    document.querySelectorAll('.close-modal').forEach(btn => {
+        btn.onclick = () => {
+            const targetId = btn.getAttribute('data-target');
+            if (targetId) document.getElementById(targetId).classList.add('hidden');
+        };
+    });
+
+    const saveApiKeyBtn = document.getElementById('save-api-key');
+    if (saveApiKeyBtn) {
+        saveApiKeyBtn.onclick = () => {
+            const val = apiKeyInput ? apiKeyInput.value.trim() : '';
+            saveApiKey(val);
+            state.apiKey = val;
+            settingsModal.classList.add('hidden');
+            const status = document.getElementById('api-status');
+            if (status) {
+                status.textContent = val ? 'API anahtarı kaydedildi!' : 'API anahtarı kaldırıldı.';
+                setTimeout(() => { status.textContent = ''; }, 3000);
+            }
+        };
+    }
+
+    document.getElementById('clear-cancel').onclick = () => clearModal.classList.add('hidden');
+    document.getElementById('clear-confirm').onclick = () => {
+        clearCurrentChat();
+        clearModal.classList.add('hidden');
     };
 
-    const pool = responses[intent];
-    if (!pool) return 'Bir sorun oluştu, lütfen tekrar deneyin.';
-
-    const pick = pickRandom(pool);
-    if (typeof pick === 'function') {
-        // Find math expression if this is a math intent
-        if (intent === 'math') {
-            const math = extractMathExpression(message);
-            if (math) return pick(math.expression, math.result);
+    document.getElementById('delete-cancel').onclick = () => deleteModal.classList.add('hidden');
+    document.getElementById('delete-confirm').onclick = () => {
+        if (state.pendingDeleteChatId) {
+            deleteChat(state.pendingDeleteChatId);
+            state.pendingDeleteChatId = null;
         }
-        return pick(message);
-    }
-    return pick;
+        deleteModal.classList.add('hidden');
+    };
+
+    if (mobileMenuBtn) mobileMenuBtn.onclick = openSidebar;
+    if (sidebarCloseBtn) sidebarCloseBtn.onclick = closeSidebar;
+    if (sidebarOverlay) sidebarOverlay.onclick = closeSidebar;
 }
 
-// === Typing Effect ===
-async function typeResponse(element, text) {
-    state.typingActive = true;
-    element.textContent = '';
-
-    // First type as plain text
-    for (let i = 0; i < text.length; i++) {
-        if (!state.typingActive) return; // cancelled
-        element.textContent += text[i];
-        // Small random delay for natural feel
-        const delay = randomInt(CHAR_DELAY_MIN, CHAR_DELAY_MAX);
-        await sleep(delay);
-    }
-
-    state.typingActive = false;
-
-    // Now replace with rendered markdown
-    let rendered;
-    try {
-        rendered = marked.parse(text);
-    } catch (e) {
-        rendered = escapeHtml(text);
-    }
-    element.innerHTML = rendered;
-
-    // Add copy buttons to code blocks
-    element.querySelectorAll('pre').forEach(pre => {
-        const btn = document.createElement('button');
-        btn.className = 'copy-btn';
-        btn.textContent = 'Kopyala';
-        btn.addEventListener('click', () => {
-            const code = pre.querySelector('code') ? pre.querySelector('code').textContent : pre.textContent;
-            navigator.clipboard.writeText(code).then(() => {
-                btn.textContent = 'Kopyalandı!';
-                setTimeout(() => { btn.textContent = 'Kopyala'; }, 2000);
-            }).catch(() => {
-                btn.textContent = 'Hata';
-                setTimeout(() => { btn.textContent = 'Kopyala'; }, 2000);
-            });
-        });
-        pre.style.position = 'relative';
-        pre.appendChild(btn);
-    });
+function openSidebar() {
+    document.getElementById('sidebar').classList.add('open');
+    document.getElementById('sidebar-overlay').classList.add('active');
+    state.sidebarOpen = true;
 }
 
-//
+function closeSidebar() {
+    document.getElementById('sidebar').classList.remove('open');
+    document.getElementById('sidebar-overlay').classList.remove('active');
+    state.sidebarOpen = false;
+}
+
+// Şifre kontrolünü başlat
+initAuth();
+</script>
+</body>
+</html>
